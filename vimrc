@@ -1,76 +1,103 @@
 set nocompatible " be iMproved
 filetype off " required!
 
-" INSTALL
-" - Ag
-" - FZF
-" - Base16 Shell
 
-" plugins
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" Plugins {{{
+call plug#begin('~/.vim/plugged')
+Plug 'arcticicestudio/nord-vim'       " Theme
+Plug 'vim-airline/vim-airline'        " Status/tabline theme
+Plug 'vim-airline/vim-airline-themes'
 
-Plugin 'VundleVim/Vundle.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " Fzf search
+Plug 'junegunn/fzf.vim'
 
-" eilixir syntax colors
-Plugin 'elixir-editors/vim-elixir' 
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " VSCode-like autocompletion
+"Plug 'neoclide/coc-solargraph', {'do': 'yarn install --frozen-lockfile'}
 
-" themes
-Plugin 'chriskempson/base16-vim'
-Plugin 'arcticicestudio/nord-vim'
+Plug 'elixir-editors/vim-elixir'          " General Vim <3 Elixir
+Plug 'vim-ruby/vim-ruby'                  " General Vim <3 Ruby
+Plug 'jiangmiao/auto-pairs'               " Auto complete ()[]{}
+Plug 'tmux-plugins/vim-tmux-focus-events' " Auto read on focus event
+call plug#end()
+" }}}
 
-" FZF search
-Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plugin 'junegunn/fzf.vim'
 
-call vundle#end()
+" General {{{
+colorscheme nord    " Nord theme
 
-filetype indent on " load filetype-specific indent files
-set history=500 " longer histiry
-set mouse=a " activate mouse
-set noswapfile " no swap file
-set backspace=indent,eol,start " enable backspace 
+" Auto read file on focus
+set autoread
+au FocusGained,BufEnter * :checktime
 
-" looks
-colorscheme nord " color scheme
-syntax enable " colored syntax
-set number " show line number
-set relativenumber " show relative line number
-set showcmd " show last command in bottom bar
-set wildmenu " visual autocomplete for command menu
-set lazyredraw " redraw only when we need to
-set showmatch " highlight matching [{()}]
+set colorcolumn=120 " Show line length border
+set noswapfile      " No swap
+set number          " Show line number
+set showcmd         " Show last command in bottom bar
+set wildmenu        " Visual autocomplete for command menu
+set showmatch       " Highlight matching ()[]{}
+set scrolloff=20    " Above / below cursor padding
 
-" search
-" ag search in vim
-command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
-set path+=**
-set ignorecase " ignore case
-set smartcase " if there is a uppercase letter do not ignore case
-set incsearch " search as characters are entered
-set hlsearch  " highlight matches
-set scrolloff=10 " show 10 lines above/below search hit
+set backspace=indent,eol,start  " Make backspace work
+set tabstop=2                   " Tab is two columns
+set shiftwidth=2                " Two columns for reindent
+set expandtab                   " Turn tab to spaces
+" }}}
 
-" tabs
-set expandtab
-set tabstop=2
-set shiftwidth=2
 
-" remap keys
-let mapleader="," " leader is comma
-set pastetoggle=<f5> " paste toggle
-" move to beginning/end of line
-nnoremap B ^ 
+" Search {{{
+" Ag search
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+set ignorecase  " Ignore case
+set smartcase   " If there is a uppercase letter do not ignore case
+set incsearch   " Search as characters are entered
+set hlsearch    " Highlight matches
+" }}}
+
+
+" Remaps {{{
+let mapleader=","                 " Set comma to leader
+nnoremap <leader>a :Ag!<CR>       " Comma -> a to Ag search
+nnoremap <leader>f :Files!<CR>    " Comma -> to Fzf search
+nnoremap <leader>e :Explore<CR>   " Comma -> e to vim explore
+nnoremap <leader>noh :noh<CR>     " Comma -> noh to stop highlighting
+nnoremap <leader>tn :Texplore<CR> " Comma -> nt to open new tab in explore
+nnoremap <leader>q :q<CR>         " Comma -> q to quit
+nnoremap <leader>pm :set paste<CR>    " Comma -> pm to set paste mode
+nnoremap <leader>npm :set nopaste<CR> " Comma -> npm to unset paste mode
+
+nnoremap <leader>rc :so ~/.vimrc<CR>   " Reload vimrc
+
+" Move to beginning / end of line
+nnoremap B ^
 nnoremap E $
 nnoremap $ <nop>
 nnoremap ^ <nop>
-" ,a to ag search
-nnoremap <leader>a :Ag<CR> 
-" ,f to fzf search
-nnoremap <leader>f :FZF<CR> 
-" ,nh to stop highlight
-nnoremap <leader>nh :noh<CR> 
-" ,rn to toggle relative number
-nnoremap <Leader>rn :set relativenumber!<cr>
-" ,nt to open new tab
-nnoremap <leader>tn :tabnew<CR> 
+" }}}
+
+
+" Coc {{{
+set hidden          " TextEdit might fail if hidden is not set
+set nobackup        " Some servers have issues with backup files
+set nowritebackup
+set updatetime=300  " Snappier UX (default 4000ms)
+set shortmess+=c    " Don't pass messages to |ins-completion-menu|
+set signcolumn=yes  " Always show the signcolumn. Otherwise it would shift the
+                    " text each time diagnostics appear/become resolved
+
+" Use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+
+" Navigate the completion list with Tab / Shift + Tab
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" }}}
