@@ -10,21 +10,26 @@ export NVM_DIR="$HOME/.nvm"
 export PATH=/usr/local/bin:$PATH
 export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
 
-# Theme
-ZSH_THEME="robbyrussell"
+# Exports Vim fzf search
+# Pipe through ag to respect .gitignore
+export FZF_DEFAULT_COMMAND='ag -g ""'
 
 # Plugins
 plugins=(
-  git
-  dotenv
   zsh-autosuggestions
 )
 
-# Dotenv file
-ZSH_DOTENV_FILE=.dotenv
+# Theme
+ZSH_THEME="hajen"
+
+# Direnv
+eval "$(direnv hook zsh)"
 
 source $ZSH/oh-my-zsh.sh
 
 # Alias
-alias clc='clear'
+alias c='clear'
 alias dc='docker-compose'
+alias v='vim'
+alias t='tmux'
+alias g='git'

@@ -57,15 +57,17 @@ set hlsearch    " Highlight matches
 
 
 " Remaps {{{
-let mapleader=","                 " Set comma to leader
-nnoremap <leader>a :Ag!<CR>       " Comma -> a to Ag search
-nnoremap <leader>f :Files!<CR>    " Comma -> to Fzf search
-nnoremap <leader>e :Explore<CR>   " Comma -> e to vim explore
-nnoremap <leader>noh :noh<CR>     " Comma -> noh to stop highlighting
-nnoremap <leader>tn :Texplore<CR> " Comma -> nt to open new tab in explore
-nnoremap <leader>q :q<CR>         " Comma -> q to quit
-nnoremap <leader>pm :set paste<CR>    " Comma -> pm to set paste mode
-nnoremap <leader>npm :set nopaste<CR> " Comma -> npm to unset paste mode
+" Set comma to leader
+" and some other custom shortcuts
+let mapleader=","                 
+nnoremap <leader>a :Ag!<CR>
+nnoremap <leader>f :Files!<CR>
+nnoremap <leader>e :Explore<CR>   
+nnoremap <leader>noh :noh<CR>
+nnoremap <leader>tn :tabnew<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>pm :set paste<CR>
+nnoremap <leader>npm :set nopaste<CR>
 
 nnoremap <leader>rc :so ~/.vimrc<CR>   " Reload vimrc
 
