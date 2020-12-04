@@ -4,8 +4,9 @@ filetype off " required!
 
 " Plugins {{{
 call plug#begin('~/.vim/plugged')
-Plug 'arcticicestudio/nord-vim'       " Theme
-Plug 'vim-airline/vim-airline'        " Status/tabline theme
+Plug 'arcticicestudio/nord-vim'         " Nord theme
+Plug 'joshdick/onedark.vim'             " One dark theme
+Plug 'vim-airline/vim-airline'          " Status/tabline theme
 Plug 'vim-airline/vim-airline-themes'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } " Fzf search
@@ -17,13 +18,16 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'} " VSCode-like autocompletion
 Plug 'elixir-editors/vim-elixir'          " General Vim <3 Elixir
 Plug 'vim-ruby/vim-ruby'                  " General Vim <3 Ruby
 Plug 'jiangmiao/auto-pairs'               " Auto complete ()[]{}
+
 Plug 'tmux-plugins/vim-tmux-focus-events' " Auto read on focus event
 call plug#end()
 " }}}
 
 
-" General {{{
-colorscheme nord    " Nord theme
+" Theme {{{
+syntax on
+set cursorline
+colorscheme onedark
 
 " Auto read file on focus
 set autoread
