@@ -1,35 +1,30 @@
-# Exports Oh My Zsh
-export ZSH="/Users/polle/.oh-my-zsh"
-# Exports AWS
-export AWS_PROFILE=fishbrain
-export DEFAULT_AWS_REGION=eu-west-1
-# Exports NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-# Exports Paths
-export PATH=/usr/local/bin:$PATH
-export PATH="/usr/local/opt/terraform@0.12/bin:$PATH"
-
-# Exports Vim fzf search
-# Pipe through ag to respect .gitignore
-export FZF_DEFAULT_COMMAND='ag -g ""'
+# Theme
+ZSH_THEME="pollele"
 
 # Plugins
 plugins=(
   zsh-autosuggestions
 )
 
-# Theme
-ZSH_THEME="hajen"
+# NVM (don't auto load nvm)
+export NVM_DIR="$HOME/.nvm"
+alias loadnvm='[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"'
+
+# FZF in Vim
+# Pipe through ag to respect .gitignore
+export FZF_DEFAULT_COMMAND='ag -g ""'
 
 # Direnv
 eval "$(direnv hook zsh)"
 
+# Load Oh My Zsh
+export ZSH="/Users/polle/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
 
 # Alias
 alias c='clear'
-alias dc='docker-compose'
+alias dc='docker compose'
 alias v='vim'
 alias t='tmux'
 alias g='git'
+
