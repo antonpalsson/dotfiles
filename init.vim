@@ -22,11 +22,19 @@ set scrolloff=20	" Above / below cursor padding
 
 " Bindings
 let mapleader=","
-nnoremap <leader>noh :noh<CR>
+" Commons
+nnoremap <leader>n :nohlsearch<CR>
 nnoremap <leader>t :tabnew<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>w :w<CR>
+" Plugins
 nnoremap <leader>f :Files<CR>
 nnoremap <leader>a :Ag<CR>
 nnoremap <leader>b :NERDTreeToggle<CR>
+" Search for selected text
+vnoremap <leader>s y<ESC>/<c-r>"<CR>
+" Replace highlighted text
+nnoremap <leader>r :%s///gc<left><left><left>
 
 " Autoread file on focus gained (required for Tmux)
 au FocusGained * silent! checktime

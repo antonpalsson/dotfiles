@@ -21,7 +21,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Alias
 alias dc='docker compose'
-alias v='nvim'
+alias v='nvim .'
 alias t='tmux'
 
 # Remove all local branches except master, main and develop
