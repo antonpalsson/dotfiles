@@ -19,9 +19,12 @@ eval "$(direnv hook zsh)"
 export ZSH="/Users/polle/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
 
+# Load Autojump
+source /usr/local/share/autojump/autojump.zsh
+
 # Alias
 alias dc='docker compose'
-alias v='nvim .'
+alias v='nvim'
 alias t='tmux'
 
 # Remove all local branches except master, main and develop

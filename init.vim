@@ -7,6 +7,8 @@ call plug#begin("~/.vim/plugged")
   Plug 'junegunn/fzf.vim'
   Plug 'mileszs/ack.vim'						" Ack / Ag search
   Plug 'neoclide/coc.nvim', {'branch': 'release'}			" Coc autocomplete
+  Plug 'vim-ruby/vim-ruby'						" <3 Ruby
+  Plug 'elixir-editors/vim-elixir'					" <3 Elixir
   let g:coc_global_extensions = []
 call plug#end()
 
@@ -27,6 +29,7 @@ nnoremap <leader>n :nohlsearch<CR>
 nnoremap <leader>t :tabnew<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>w :w<CR>
+nnoremap <leader>e :Explore<CR>
 " Plugins
 nnoremap <leader>f :Files<CR>
 nnoremap <leader>a :Ag<CR>
