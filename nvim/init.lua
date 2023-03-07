@@ -50,25 +50,32 @@ vim.o.shiftwidth = 2
 vim.o.numberwidth = 4
 vim.o.showtabline = 2
 vim.o.scrolloff = 30
--- vim.o.colorcolumn = '120'
 vim.o.signcolumn = 'yes'
 vim.o.splitbelow = true
 vim.o.splitright = true
 
+
 -- Bindings
 vim.api.nvim_set_keymap('n', '<leader>t', ':Texplore<CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>T', ':Texplore | :tabmove -1<CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>e', ':Explore<CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>q', ':quit<CR>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>w', ':write<CR>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>tl', '::tabmove 1<CR>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>th', '::tabmove -1<CR>', { noremap = true })
+--vim.api.nvim_set_keymap('n', '<leader>w', ':write<CR>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rv', ':vertical res +5<CR>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rh', ':res +5<CR>', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>bc', ':%bd|e#<CR>', { noremap = true })
 
-local telescope = require('telescope')
+local telescope = require('telescope').setup {
+  defaults = { 
+    file_ignore_patterns = { 
+      "vendor/*",
+      "node_modules/*"
+    }
+  }
+}
+
 local telescope_builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', telescope_builtin.find_files, {})
--- vim.keymap.set('n', '<leader>fg', telescope_builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fg', telescope_builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', telescope_builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', telescope_builtin.help_tags, {})
 
