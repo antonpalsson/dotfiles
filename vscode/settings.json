@@ -1,0 +1,16 @@
+{
+  "editor.tabSize": 2,
+  "telemetry.telemetryLevel": "off",
+  "files.exclude": {
+    "**/.git": false
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "GitHub Dark Default",
+  "workbench.colorCustomizations": {
+    "[GitHub Dark Default]": {
+      "panel.background": "#000000",
+    } 
+  },
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+}
+

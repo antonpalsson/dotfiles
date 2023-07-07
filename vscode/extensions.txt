@@ -1,0 +1,5 @@
+GitHub.github-vscode-theme
+ms-vscode-remote.remote-containers
+PKief.material-icon-theme
+vscodevim.vim
+

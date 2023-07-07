@@ -1,12 +1,13 @@
 ![Mi casa su casa](./mi-casa-su-casa.jpeg)
 
-## Dotfiles for
-[Oh My Zsh](https://ohmyz.sh/), 
+## Dotfiles
 [Neovim](https://neovim.io/), 
 [Tmux](https://github.com/tmux/tmux/), 
-[Kitty](https://sw.kovidgoyal.net/kitty/)
+[Kitty](https://sw.kovidgoyal.net/kitty/), 
+[Oh My Zsh](https://ohmyz.sh/)
+
+### Other stuff
+[VS Code](https://code.visualstudio.com/)
 
 ### Todo
-- [ ] LSP config
-- [ ] Telescope config
-
+- [] Snippets
