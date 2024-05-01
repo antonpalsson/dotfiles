@@ -1,0 +1,10 @@
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+[pull]
+	rebase = true
+[pager]
+	branch = false
+[push]
+	autoSetupRemote = true
