@@ -36,7 +36,7 @@ telescope.setup {
   },
   pickers = {
     find_files = {
-      find_command = { 'rg', '--hidden', '--files', '-g', '!.git/**', '-g', '!**/cache/**' },
+      find_command = { 'rg', '--hidden', '--files', '-g', '!.git/**', '-g', '!**/cache/**', '-g', '!.yarn/**' },
     },
     live_grep = {
       additional_args = { '--hidden', '-g', '!.git/**' },

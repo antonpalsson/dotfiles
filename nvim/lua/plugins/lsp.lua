@@ -60,17 +60,25 @@ cmp.setup({
 
 
 -- LSP
-local servers = { 'ruby_lsp', 'rubocop', 'tailwindcss', 'lua_ls', 'rnix', 'tsserver', 'rust_analyzer', 'eslint' }
+local servers = {
+  ruby_lsp = {},
+  rubocop = {},
+  tailwindcss = {},
+  lua_ls = {},
+  rnix = {},
+  tsserver = {},
+  rust_analyzer = {},
+  eslint = {}
+}
 
 require("mason").setup()
-require("mason-lspconfig").setup({ ensure_installed = servers })
+require("mason-lspconfig").setup({ ensure_installed = vim.tbl_keys(servers) })
 
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    capabilities = capabilities,
-  }
+for server, config in pairs(servers) do
+  config = vim.tbl_deep_extend("force", { capabilities = capabilities }, config)
+  lspconfig[server].setup(config)
 end
 
 -- Toggle diagnostic virtual text

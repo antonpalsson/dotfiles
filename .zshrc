@@ -36,7 +36,6 @@ alias gcmsg="git commit --message"
 alias gc!="git commit --amend"
 alias gcn!="git commit --amend --no-edit"
 alias gb="git branch"
-alias gbc="git branch --show-current"
 alias gco="git checkout"
 alias grb="git rebase"
 alias grbi="git rebase --interactive"
@@ -44,6 +43,7 @@ alias gpf="git push --force-with-lease"
 alias gp="git push"
 alias gl="git pull"
 alias gf="git fetch"
+function gpsup() { git branch --show-current | xargs git push --set-upstream origin } # Set upstream
 function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | head -1 | xargs git checkout } # Checkout master/main
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|\*" | xargs git branch -D } # Cleanup branches
