@@ -1,5 +1,6 @@
 -- Options
-vim.g.mapleader = ' '
+
+vim.g.mapleader = " "
 -- vim.o.fileencoding = 'utf-8'
 vim.o.termguicolors = true
 -- vim.o.mouse = 'a'
@@ -20,8 +21,8 @@ vim.o.shiftwidth = 2
 vim.o.numberwidth = 4
 vim.o.showtabline = 2
 vim.o.scrolloff = 10
-vim.o.signcolumn = 'yes'
+vim.o.signcolumn = "yes"
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.updatetime = 50
-vim.o.mousescroll = 'ver:3,hor:0'
+vim.o.mousescroll = "ver:3,hor:0"

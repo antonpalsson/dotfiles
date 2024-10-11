@@ -1,83 +1,40 @@
--- CMP
-local cmp = require('cmp')
-local luasnip = require('luasnip')
-require("luasnip.loaders.from_vscode").lazy_load() -- friendly snippets
+-- LSP & lint & format
 
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  window = {
-    completion = cmp.config.window.bordered(),
-    documentation = cmp.config.window.bordered(),
-  },
-  mapping = cmp.mapping.preset.insert({
-    ['<CR>'] = cmp.mapping.confirm({ select = false }),
-    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-    ['<C-e>'] = cmp.mapping.abort(),
+local mason = require("mason")
+local mason_lspconfig = require("mason-lspconfig")
+local lspconfig = require("lspconfig")
+-- local capabilities = require("cmp_nvim_lsp").default_capabilities()
+local null_ls = require("null-ls")
 
-    ['<Tab>'] = function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item({ behavior = 'insert' })
-      else
-        fallback()
-      end
-    end,
-
-    ['<S-Tab>'] = function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item({ behavior = 'insert' })
-      else
-        fallback()
-      end
-    end,
-
-    ['<C-f>'] = function(fallback)
-      if luasnip.jumpable(1) then
-        luasnip.jump(1)
-      else
-        fallback()
-      end
-    end,
-
-    ['<C-b>'] = function(fallback)
-      if luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end
-  }),
-  sources = cmp.config.sources({
-    { name = "nvim_lsp", keyword_length = 2 },
-    { name = "luasnip",  keyword_length = 3 },
-    { name = "path",     keyword_length = 3 },
-    { name = "buffer",   keyword_length = 4 },
-  }),
+mason.setup()
+mason_lspconfig.setup({
+	ensure_installed = { "lua_ls", "ruby_lsp", "solargraph", "tailwindcss", "rnix", "ts_ls", "rust_analyzer" },
 })
 
-
 -- LSP
-local servers = { 'ruby_lsp', 'rubocop', 'tailwindcss', 'lua_ls', 'rnix', 'tsserver', 'rust_analyzer', 'eslint' }
+-- lspconfig.ruby_lsp.setup()
+lspconfig.solargraph.setup({})
+lspconfig.tailwindcss.setup({})
+lspconfig.rnix.setup({})
+lspconfig.ts_ls.setup({})
+lspconfig.rust_analyzer.setup({})
 
-require("mason").setup()
-require("mason-lspconfig").setup({ ensure_installed = servers })
+lspconfig.lua_ls.setup({
+	settings = {
+		Lua = {
+			diagnostics = {
+				globals = { "vim" },
+			},
+		},
+	},
+})
 
-local lspconfig = require('lspconfig')
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    capabilities = capabilities,
-  }
-end
-
--- Toggle diagnostic virtual text
-vim.diagnostic.config({ virtual_text = false, underline = false })
-vim.keymap.set('n', '<leader>dd',
-  ':lua vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })<CR>', { silent = true })
--- Format
-vim.keymap.set('n', '<leader>df', vim.lsp.buf.format, {})
--- Go to definition
-vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, {})
+-- Lint & format
+null_ls.setup({
+	sources = {
+		null_ls.builtins.formatting.stylua,
+		null_ls.builtins.formatting.prettier,
+		-- null_ls.builtins.formatting.rubocop,
+		-- null_ls.builtins.diagnostics.rubocop,
+	},
+})
