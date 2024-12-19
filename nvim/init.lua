@@ -1,11 +1,7 @@
--- Init --
-
-require("options")
-require("bindings")
+require("settings")
 require("plugins/lazy")
+require("plugins/utils")
 require("plugins/colors")
+require("plugins/pickers")
+require("plugins/complete")
 require("plugins/lsp")
-require("plugins/mini")
-
--- require("plugins/telescope")
--- require("plugins/complete")

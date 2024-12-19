@@ -2,20 +2,17 @@
 typeset -U path
 path+=($HOME '/bin' '/usr/local/bin')
 
-# Prompt (Nix shell)
-setopt prompt_subst
-PROMPT='%B%F{green}%n@%m%f%b %F{yellow}${IN_NIX_SHELL:+[nix-shell] }%f%F{blue}%~%f %# '
-
-# Nix
-function nixrebuild() { darwin-rebuild switch --flake "$@" }
-alias nix-shell="nix-shell --run zsh"
+# Prompt
+PROMPT='%B%F{green}%n@%m%f%b %f%F{blue}%~%f %# '
 
 # CLI apps
-eval "$(z --init zsh)" # Z fast nagivgate
-eval "$(mise activate zsh)" # Mise RVM
 eval "$(/opt/homebrew/bin/brew shellenv)" # Homebrew
+eval "$(mise activate zsh)" # Mise RVM
+source /opt/homebrew/etc/profile.d/z.sh # Z fast nagivgate
 
 # Env vars
+export DOTS="/Users/polle/Github/antonpalsson/dotfiles"
+export RIPGREP_CONFIG_PATH="$DOTS/.ripgreprc"
 export EDITOR="nvim"
 export VISUAL="nvim"
 
@@ -24,6 +21,7 @@ alias ll="ls -la"
 
 alias sa="source ~/.zshrc"
 alias vim="nvim"
+alias v="nvim"
 
 alias dc="docker compose"
 alias dce="docker compose exec"
@@ -35,6 +33,7 @@ alias glg="git log --stat"
 alias ga="git add"
 alias gaa="git add --all"
 alias gc="git commit"
+alias gcp="git cherry-pick"
 alias gcmsg="git commit --message"
 alias gc!="git commit --amend"
 alias gcn!="git commit --amend --no-edit"
@@ -51,9 +50,5 @@ function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | 
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|\*" | xargs git branch -D } # Cleanup branches
 
-# Bind delete
-bindkey "^[[3~" delete-char
-
 # Kosläpp
 # ((RANDOM % 12 == 0)) && echo Mooooooo | cowsay && echo ""
-
