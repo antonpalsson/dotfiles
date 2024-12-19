@@ -1,67 +1,102 @@
--- Colors
-
--- Theme
+-- Theme --
 require("github-theme").setup({
-	options = {
-		transparent = true,
-	},
+  specs = {
+    github_dark_high_contrast = {
+      -- bg0 = "#212327",
+      bg1 = "#04080D"
+    }
+  }
 })
 
-vim.cmd("colorscheme github_dark_high_contrast")
+vim.cmd.colorscheme('github_dark_high_contrast')
 
--- Treesitter
+-- Treesitter --
 require("nvim-treesitter.configs").setup({
-	highlight = { enable = true },
-	indent = { enable = false },
+  highlight = { enable = true },
+  indent = { enable = false },
   incremental_selection = { enable = false },
   textobjects = { enable = false },
 })
 
--- Git signs
-require("gitsigns").setup({
-	signs = {
-		add = { text = "+" },
-		change = { text = "~" },
-	},
-	signs_staged = {
-		add = { text = "+" },
-		change = { text = "~" },
-	},
-})
+-- Icons --
+require("mini.icons").setup()
 
--- Indent blankline
+-- Indent blankline --
 require("ibl").setup({
-	scope = { enabled = false },
+  scope = { enabled = false },
 })
 
--- Lualine
-require("lualine").setup({
-	options = {
-		section_separators = { left = " ", right = " " },
-		component_separators = { left = " ", right = " " },
-	},
-	sections = {
-		lualine_a = { "mode" },
-		lualine_b = { { "branch", color = { fg = "white" } } },
-		lualine_c = {
-			"diff",
-			{ "filename", path = 1, symbols = { modified = " [modified] ", readonly = " [read only] ", unnamed = "" } },
-		},
-		lualine_x = { "encoding", "fileformat" },
-		lualine_y = { { "progress", color = { fg = "white" } } },
-		lualine_z = { "location" },
-	},
-	tabline = {
-		lualine_a = { { "tabs", mode = 2, max_length = vim.o.columns, separator = { left = "", right = "" } } },
-	},
-	inactive_sections = {
-		lualine_a = {},
-		lualine_b = {},
-		lualine_c = {
-			{ "filename", symbols = { modified = " [modified] ", readonly = " [read only] ", unnamed = "" } },
-		},
-		lualine_x = {},
-		lualine_y = {},
-		lualine_z = {},
-	},
+-- Diff --
+require("mini.diff").setup({
+  view = {
+    style = 'sign',
+    signs = { add = '+', change = '~', delete = '-' },
+    priority = 9,
+  }
+})
+
+-- Tabline --
+vim.api.nvim_set_hl(0, 'TabLine', { fg = 'gray' })
+vim.api.nvim_set_hl(0, 'TabLineSel', { fg = 'black', bg = '#71b7ff' })
+vim.api.nvim_set_hl(0, 'TabLineFill', { bg = '#04080D' })
+
+-- Statusline --
+local mini_statusline = require('mini.statusline')
+
+local function statusline()
+  local mode, mode_hl = mini_statusline.section_mode({ trunc_width = 120 })
+  local git           = mini_statusline.section_git({ trunc_width = 40 })
+  local diff          = mini_statusline.section_diff({ trunc_width = 75 })
+  local diagnostics   = mini_statusline.section_diagnostics({ trunc_width = 75 })
+  local lsp           = mini_statusline.section_lsp({ icon = 'λ', trunc_width = 75 })
+  local filename      = mini_statusline.section_filename({ trunc_width = 9999 }) -- Always truncate
+  local percent       = '%2p%%'
+  local location      = '%3l:%-2c'
+
+  return mini_statusline.combine_groups({
+    { hl = mode_hl,                 strings = { mode } },
+    { hl = 'MiniStatuslineDevinfo', strings = { git, diff, diagnostics, lsp } },
+    '%<', -- Mark general truncate point
+    { hl = 'MiniStatuslineFilename', strings = { filename } },
+    '%=', -- End left alignment
+    { hl = 'MiniStatuslineFilename', strings = { '%{&filetype}' } },
+    { hl = 'MiniStatuslineFileinfo', strings = { percent } },
+    { hl = mode_hl,                  strings = { location } },
+  })
+end
+
+mini_statusline.setup({
+  content = {
+    active = statusline
+  },
+})
+
+-- Starter --
+local mini_starter = require("mini.starter")
+
+local function header()
+  return [[
+   //
+ _oo\
+(__/ \  _  _
+   \  \/ \/ \
+   (         )\
+    \_______/  \
+     [[] [[]
+     [[] [[]
+  ]]
+end
+
+local function footer()
+  local version_info = vim.version()
+  return string.format("NVIM v%d.%d.%d", version_info.major, version_info.minor, version_info.patch)
+end
+
+mini_starter.setup({
+  header = header,
+  items = {
+    { action = ":Explore", name = "Explore", section = "" },
+    { action = ":q",       name = "Quit",    section = "" },
+  },
+  footer = footer,
 })
