@@ -46,9 +46,6 @@ vim.keymap.set("i", "<C-a>", "<Left>", {})
 vim.keymap.set("i", "<C-s>", "<Down>", {})
 vim.keymap.set("i", "<C-d>", "<Right>", {})
 
--- Toggle hardtime
-vim.keymap.set("n", "<leader>tht", ":Hardtime toggle<CR>", {})
-
 -- Toggle wrap
 vim.keymap.set("n", "<leader>tw", function() vim.o.wrap = not vim.o.wrap end, {})
 
@@ -65,31 +62,6 @@ vim.keymap.set(
     vim.diagnostic.config({ virtual_text = not current_virtual_text })
   end,
   { silent = true }
-)
-
--- Expand quickfix list into new tabs
-vim.keymap.set(
-  "n",
-  "<leader>co",
-  function()
-    if vim.bo.buftype ~= 'quickfix' then return end
-
-    local qf_winid = vim.fn.win_getid()
-    local qf_list = vim.fn.getqflist()
-
-    for _, entry in ipairs(qf_list) do
-      if entry.valid == 1 and entry.bufnr > 0 then
-        local filepath = vim.fn.bufname(entry.bufnr)
-        if filepath and filepath ~= '' then
-          vim.cmd('tabnew ' .. vim.fn.fnameescape(filepath))
-        end
-      end
-    end
-
-    vim.fn.win_gotoid(qf_winid)
-    vim.cmd('close')
-  end,
-  {}
 )
 
 -- Delete all buffers
@@ -120,3 +92,33 @@ vim.keymap.set(
   end,
   {}
 )
+
+-- Expand quickfix list into new tabs
+vim.keymap.set(
+  "n",
+  "<leader>co",
+  function()
+    if vim.bo.buftype ~= 'quickfix' then return end
+
+    local qf_winid = vim.fn.win_getid()
+    local qf_list = vim.fn.getqflist()
+
+    for _, entry in ipairs(qf_list) do
+      if entry.valid == 1 and entry.bufnr > 0 then
+        local filepath = vim.fn.bufname(entry.bufnr)
+        if filepath and filepath ~= '' then
+          vim.cmd('tabnew ' .. vim.fn.fnameescape(filepath))
+        end
+      end
+    end
+
+    vim.fn.win_gotoid(qf_winid)
+    vim.cmd('close')
+  end,
+  {}
+)
+
+-- Auto resize splits
+vim.api.nvim_create_autocmd("VimResized", {
+  command = "wincmd =",
+})
