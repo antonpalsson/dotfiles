@@ -16,6 +16,11 @@ lspconfig.ts_ls.setup({
   capabilities = capabilities,
 })
 
+-- lspconfig.eslint.setup({
+--   cmd = { "mise", "x", "--", "vscode-eslint-language-server", "--stdio" },
+--   capabilities = capabilities,
+-- })
+
 lspconfig.lua_ls.setup({
   cmd = { "mise", "x", "--", "lua-language-server" },
   settings = {
