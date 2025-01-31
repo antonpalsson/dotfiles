@@ -1,6 +1,0 @@
-require("mini.ai").setup()
-require("mini.pairs").setup()
-require("mini.splitjoin").setup()
-require("mini.comment").setup()
-require("mini.surround").setup()
-require("hardtime").setup()
