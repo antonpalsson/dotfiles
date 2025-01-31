@@ -3,9 +3,6 @@ require('mini.pick').setup({
   options = {
     content_from_bottom = true,
   },
-  mappings = {
-    refine = "<C-e>",
-  },
   window = {
     prompt_prefix = " ",
     config = function()
