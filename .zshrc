@@ -17,22 +17,24 @@ export RIPGREP_CONFIG_PATH="$DOTS/.ripgreprc"
 export EDITOR="nvim"
 export VISUAL="nvim"
 
-# Booli
-export AWS_PROFILE=sso-int
-alias pf_k8s="ssh -L 6443:k8s-api.bh.booli.se:6443 sawyer.booli.se"
-
 # Aliases
 alias sa="source ~/.zshrc"
 alias ".."="cd .."
 alias ll="ls -la"
 alias icat="kitten icat"
+
 alias vim="nvim"
 alias v="nvim"
+
 alias ta="tmux attach"
+alias tl="tmux list-sessions"
+function ts() { tmux new -s "$*" }
+
 alias dc="docker compose"
 alias dce="docker compose exec"
 alias dcdu="docker compose down && docker compose up -d"
 function dcl() { docker compose logs "$@" -f }
+
 alias k="kubectl"
 
 alias gss="git status --short"
@@ -77,6 +79,13 @@ function autossh() {
         sleep 3 
     done 
 }
+
+# Booli
+if [ -f ~/.booli_zshrc ]; then
+    source ~/.booli_zshrc
+else
+    print "~/.booli_zshrc not found."
+fi
 
 # Kosläpp
 # ((RANDOM % 12 == 0)) && echo Mooooooo | cowsay && echo ""

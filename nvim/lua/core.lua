@@ -20,6 +20,7 @@ vim.o.splitright = true
 vim.o.mousescroll = "ver:3,hor:0"
 vim.o.scrolloff = 10
 vim.o.pumheight = 10
+vim.o.winborder = 'single'
 
 -- Bindings --
 vim.keymap.set("n", "<leader>te", ":Ex<CR>", {})         -- Explore
@@ -50,14 +51,19 @@ vim.keymap.set("n", "<leader>tw", function() vim.o.wrap = not vim.o.wrap end, {}
 -- Toggle relativenumbers
 vim.keymap.set("n", "<leader>tr", function() vim.o.relativenumber = not vim.o.relativenumber end, {})
 
--- Toggle diagnostic virtual text
-vim.diagnostic.config({ virtual_text = false, underline = false })
+-- Toggle diagnostic text
+vim.diagnostic.config({ virtual_lines = false, underline = false })
 vim.keymap.set(
   "n",
   "<leader>ld",
   function()
-    local current_virtual_text = vim.diagnostic.config().virtual_text
-    vim.diagnostic.config({ virtual_text = not current_virtual_text })
+    local config = vim.diagnostic.config()
+
+    if config.virtual_lines then
+      vim.diagnostic.config({ virtual_lines = false })
+    else
+      vim.diagnostic.config({ virtual_lines = true })
+    end
   end,
   { silent = true }
 )

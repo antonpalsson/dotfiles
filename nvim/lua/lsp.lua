@@ -1,70 +1,57 @@
-local lspconfig = require("lspconfig")
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+require("mason-lspconfig").setup {
+  ensure_installed = {
+    "lua_ls",
+    "ts_ls",
+    "eslint",
+    "tailwindcss",
+    "ruby_lsp",
+  },
+  automatic_enable = true,
+}
 
-lspconfig.ruby_lsp.setup({
-  cmd = { "mise", "x", "--", "ruby-lsp" },
-  capabilities = capabilities,
+vim.lsp.config("*", {
+  root_markers = { '.git' },
 })
 
-lspconfig.tailwindcss.setup({
-  cmd = { "mise", "x", "--", "tailwindcss-language-server", "--stdio" },
-  capabilities = capabilities,
+vim.lsp.config("ruby_lsp", {
+  cmd = { "mise", "x", "--", "ruby-lsp" }
 })
 
-lspconfig.ts_ls.setup({
-  cmd = { "mise", "x", "--", "typescript-language-server", "--stdio" },
-  capabilities = capabilities,
-})
-
--- lspconfig.eslint.setup({
---   cmd = { "mise", "x", "--", "vscode-eslint-language-server", "--stdio" },
---   capabilities = capabilities,
--- })
-
-lspconfig.lua_ls.setup({
-  cmd = { "mise", "x", "--", "lua-language-server" },
+vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
       runtime = { version = 'LuaJIT' },
-      diagnostics = { globals = { "vim" } },
+      diagnostics = { globals = { 'vim' } },
+      workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+      telemetry = { enable = false },
     },
   },
-  capabilities = capabilities,
 })
 
--- Bindings
-vim.api.nvim_create_autocmd('LspAttach', {
-  desc = 'LSP actions',
-  callback = function(event)
-    local opts = { buffer = event.buf }
+vim.keymap.set('n', 'gd', ':lua vim.lsp.buf.definition()<CR>', {})
+vim.keymap.set("n", "grr", ":Pick lsp scope='references'<CR>", {})
+vim.keymap.set("n", "grd", ":Pick lsp scope='declaration'<CR>", {})
 
-    vim.keymap.set('n', 'gd', ':lua vim.lsp.buf.definition()<CR>', opts)
-    vim.keymap.set("n", "grr", ":Pick lsp scope='references'<CR>", opts)
-    vim.keymap.set("n", "grd", ":Pick lsp scope='declaration'<CR>", opts)
+vim.keymap.set({ 'n', 'x' }, 'gq', ':lua vim.lsp.buf.format({async = true})<CR>', {})
+vim.keymap.set('n', 'grn', ':lua vim.lsp.buf.rename()<CR>', {})
+vim.keymap.set('n', 'gra', ':lua vim.lsp.buf.code_action()<CR>', {})
 
-    vim.keymap.set({ 'n', 'x' }, 'gq', ':lua vim.lsp.buf.format({async = true})<CR>', opts)
-    vim.keymap.set('n', 'grn', ':lua vim.lsp.buf.rename()<CR>', opts)
-    vim.keymap.set('n', 'gra', ':lua vim.lsp.buf.code_action()<CR>', opts)
+vim.keymap.set("n", "gri", ":Pick lsp scope='implementation'<CR>", {})
+vim.keymap.set("n", "grt", ":Pick lsp scope='type_declaration'<CR>", {})
 
-    vim.keymap.set("n", "gri", ":Pick lsp scope='implementation'<CR>", opts)
-    vim.keymap.set("n", "grt", ":Pick lsp scope='type_declaration'<CR>", opts)
+vim.keymap.set('n', 'gO', ':lua vim.lsp.buf.document_symbol()<CR>', {})
+vim.keymap.set({ 'i', 's' }, '<C-s>', ':lua vim.lsp.buf.signature_help()<CR>', {})
+vim.keymap.set('n', 'K', ':lua vim.lsp.buf.hover()<CR>', {})
 
-    vim.keymap.set('n', 'gO', ':lua vim.lsp.buf.document_symbol()<CR>', opts)
-    vim.keymap.set({ 'i', 's' }, '<C-s>', ':lua vim.lsp.buf.signature_help()<CR>', opts)
-    vim.keymap.set('n', 'K', ':lua vim.lsp.buf.hover()<CR>', opts)
-  end,
-})
+vim.keymap.set("n", "]g", vim.diagnostic.goto_next)
+vim.keymap.set("n", "[g", vim.diagnostic.goto_prev)
 
--- After Neovim v0.11
--- vim.lsp.config('*', {
---   capabilities = capabilities,
---   root_markers = { '.git' },
--- })
-
--- vim.lsp.config('ruby_lsp', {
---   cmd = { "mise", "x", "--", "ruby-lsp" },
---   filetypes = { "ruby", "eruby" },
---   init_options = { formatter = "auto" },
--- })
-
--- vim.lsp.enable('ruby_lsp')
+-- local function current_repo()
+--   local handle = io.popen("git rev-parse --show-toplevel 2>/dev/null")
+--   if not handle then return nil end
+--   local result = handle:read("*a")
+--   handle:close()
+--
+--   if result == '' then return nil end
+--   return vim.fn.fnamemodify(result:gsub("%s+", ""), ":t")
+-- end
