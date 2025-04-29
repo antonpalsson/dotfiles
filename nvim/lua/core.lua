@@ -1,7 +1,7 @@
 -- Options --
-vim.g.mapleader = vim.keycode('<Space>')
+vim.g.mapleader = vim.keycode("<Space>")
 vim.o.termguicolors = true
--- vim.o.mouse = 'a'
+-- vim.o.mouse = "a"
 vim.o.showmode = false
 vim.o.swapfile = false
 vim.o.number = true
@@ -20,6 +20,8 @@ vim.o.splitright = true
 vim.o.mousescroll = "ver:3,hor:0"
 vim.o.scrolloff = 10
 vim.o.pumheight = 10
+vim.o.winborder = "single"
+vim.o.cursorline = true
 
 -- Bindings --
 vim.keymap.set("n", "<leader>te", ":Ex<CR>", {})         -- Explore
@@ -44,20 +46,44 @@ vim.keymap.set({ "n", "v" }, "gp", '"+p', {})              -- Paste from clipboa
 vim.keymap.set("i", "<C-a>", "<Left>", {})
 vim.keymap.set("i", "<C-d>", "<Right>", {})
 
+-- LSP
+vim.keymap.set("n", "gd", ":lua vim.lsp.buf.definition()<CR>", {})
+vim.keymap.set("n", "grr", ':Pick lsp scope="references"<CR>', {})
+vim.keymap.set("n", "grd", ":Pick lsp scope='declaration'<CR>", {})
+
+vim.keymap.set({ "n", "x" }, "gq", ":lua vim.lsp.buf.format({async = true})<CR>", {})
+vim.keymap.set("n", "grn", ":lua vim.lsp.buf.rename()<CR>", {})
+vim.keymap.set("n", "gra", ":lua vim.lsp.buf.code_action()<CR>", {})
+
+vim.keymap.set("n", "gri", ':Pick lsp scope="implementation"<CR>', {})
+vim.keymap.set("n", "grt", ':Pick lsp scope="type_declaration"<CR>', {})
+
+vim.keymap.set("n", "gO", ":lua vim.lsp.buf.document_symbol()<CR>", {})
+vim.keymap.set({ "i", "s" }, "<C-s>", ":lua vim.lsp.buf.signature_help()<CR>", {})
+vim.keymap.set("n", "K", ":lua vim.lsp.buf.hover()<CR>", {})
+
+vim.keymap.set("n", "]g", vim.diagnostic.goto_next)
+vim.keymap.set("n", "[g", vim.diagnostic.goto_prev)
+
 -- Toggle wrap
 vim.keymap.set("n", "<leader>tw", function() vim.o.wrap = not vim.o.wrap end, {})
 
 -- Toggle relativenumbers
 vim.keymap.set("n", "<leader>tr", function() vim.o.relativenumber = not vim.o.relativenumber end, {})
 
--- Toggle diagnostic virtual text
-vim.diagnostic.config({ virtual_text = false, underline = false })
+-- Toggle diagnostic text
+vim.diagnostic.config({ virtual_lines = false, underline = false })
 vim.keymap.set(
   "n",
   "<leader>ld",
   function()
-    local current_virtual_text = vim.diagnostic.config().virtual_text
-    vim.diagnostic.config({ virtual_text = not current_virtual_text })
+    local config = vim.diagnostic.config()
+
+    if config.virtual_lines then
+      vim.diagnostic.config({ virtual_lines = false })
+    else
+      vim.diagnostic.config({ virtual_lines = true })
+    end
   end,
   { silent = true }
 )
@@ -67,8 +93,8 @@ vim.keymap.set("n", "<leader>bda", ":%bdelete<CR>", {})
 
 -- Delete all hidden buffers
 vim.keymap.set(
-  'n',
-  '<leader>bdh',
+  "n",
+  "<leader>bdh",
   function()
     local buffers = vim.api.nvim_list_bufs()
 
@@ -83,7 +109,7 @@ vim.keymap.set(
     for _, buf in ipairs(buffers) do
       if not visible_buffers[buf]
           and vim.api.nvim_buf_is_loaded(buf)
-          and not vim.api.nvim_buf_get_option(buf, 'modified') then
+          and not vim.api.nvim_buf_get_option(buf, "modified") then
         vim.api.nvim_buf_delete(buf, { force = false })
       end
     end
@@ -96,7 +122,7 @@ vim.keymap.set(
   "n",
   "<leader>co",
   function()
-    if vim.bo.buftype ~= 'quickfix' then return end
+    if vim.bo.buftype ~= "quickfix" then return end
 
     local qf_winid = vim.fn.win_getid()
     local qf_list = vim.fn.getqflist()
@@ -104,14 +130,14 @@ vim.keymap.set(
     for _, entry in ipairs(qf_list) do
       if entry.valid == 1 and entry.bufnr > 0 then
         local filepath = vim.fn.bufname(entry.bufnr)
-        if filepath and filepath ~= '' then
-          vim.cmd('tabnew ' .. vim.fn.fnameescape(filepath))
+        if filepath and filepath ~= "" then
+          vim.cmd("tabnew " .. vim.fn.fnameescape(filepath))
         end
       end
     end
 
     vim.fn.win_gotoid(qf_winid)
-    vim.cmd('close')
+    vim.cmd("close")
   end,
   {}
 )
