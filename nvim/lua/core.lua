@@ -39,27 +39,8 @@ vim.keymap.set("v", "<C-u>", ":move '<-2<CR>gv=gv", {})  -- Move selecion up/dow
 vim.keymap.set("v", "<C-d>", ":move '>+1<CR>gv=gv", {})
 vim.keymap.set("v", ">", ">gv", {})                      -- Move selection left/right
 vim.keymap.set("v", "<", "<gv", {})
-
-
--- Pairs
-vim.keymap.set('i', '<C-o>', function()
-  local pairs_map = { ['"'] = '"', ["'"] = "'", ["`"] = "`", ["("] = ")", ["{"] = "}", ["["] = "]", ["<"] = ">", }
-
-  local line = vim.api.nvim_get_current_line()
-  local col = vim.api.nvim_win_get_cursor(0)[2]
-
-  if col == 0 then
-    return
-  end
-
-  local char = line:sub(col, col)
-  local closing_char = pairs_map[char]
-
-  if closing_char then
-    vim.api.nvim_put({ closing_char }, 'c', false, false)
-  end
-end, { desc = 'Create matching pair and move cursor inside' })
-
+vim.keymap.set("i", "<C-f>", "<Right>")                  -- Mini jumps
+vim.keymap.set("i", "<C-b>", "<Left>")
 
 -- Clipboard
 vim.keymap.set("v", "gy", function()
@@ -97,13 +78,11 @@ vim.keymap.set({ "n", "v" }, "gP", function()
   vim.cmd('normal! "+P')
 end, { desc = "Paste before clipboard" })
 
-
 -- Toggle wrap
 vim.keymap.set("n", "<leader>tw", function()
   vim.o.wrap = not vim.o.wrap
   vim.notify("Wrap: " .. tostring(vim.o.wrap))
 end, {})
-
 
 -- Toggle relativenumbers
 vim.keymap.set("n", "<leader>tr", function()
@@ -111,13 +90,11 @@ vim.keymap.set("n", "<leader>tr", function()
   vim.notify("Relative numbers: " .. tostring(vim.o.relativenumber))
 end, {})
 
-
 -- Delete all buffers
 vim.keymap.set("n", "<leader>bda", function()
   vim.cmd('%bdelete!')
   vim.notify("Deleted all buffers")
 end, {})
-
 
 -- Delete all hidden buffers
 vim.keymap.set("n", "<leader>bdh", function()
@@ -142,7 +119,6 @@ vim.keymap.set("n", "<leader>bdh", function()
   vim.notify("Deleted hidden buffers")
 end, {})
 
-
 -- Expand quickfix list into new tabs
 vim.keymap.set("n", "<leader>co", function()
   if vim.bo.buftype ~= "quickfix" then return end
@@ -164,7 +140,6 @@ vim.keymap.set("n", "<leader>co", function()
 
   vim.notify("Expanded quickfix list into new tabs")
 end, {})
-
 
 -- Auto resize splits
 vim.api.nvim_create_autocmd("VimResized", {

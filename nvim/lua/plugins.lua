@@ -1,8 +1,27 @@
+-- Hardtime --
+require("hardtime").setup({
+  restricted_keys = {
+    ["h"] = false,
+    ["j"] = false,
+    ["k"] = false,
+    ["l"] = false,
+  },
+  resetting_keys = {
+    ["gp"] = false,
+    ["gP"] = false,
+    ["gq"] = false,
+  },
+})
+
+
 -- Blink --
 require("blink.cmp").setup({
   fuzzy = { implementation = "lua" },
   signature = { enabled = true },
-  snippets = { preset = 'luasnip' },
+  snippets = { preset = 'mini_snippets' },
+  sources = {
+    default = { 'lsp', 'path', 'snippets', 'buffer' },
+  },
   completion = {
     documentation = { auto_show = true, auto_show_delay_ms = 500 },
     menu = {
@@ -18,14 +37,10 @@ require("blink.cmp").setup({
   }
 })
 
--- Snippets --
-require("luasnip").setup()
-
 
 -- Snacks --
 require("snacks").setup({
   bigfile = { enabled = true },
-  lazygit = { enabled = true },
   indent = {
     enabled = true,
     animate = { enabled = false },
@@ -33,15 +48,24 @@ require("snacks").setup({
 })
 
 
--- Mini stuff --
+-- Mini --
 require("mini.extra").setup({})
 require("mini.icons").setup({})
 require("mini.splitjoin").setup({})
 require("mini.surround").setup({})
 require("mini.ai").setup({})
+require("mini.pairs").setup({})
 
+-- Snippets
+local gen_loader = require('mini.snippets').gen_loader
+require('mini.snippets').setup({
+  snippets = {
+    gen_loader.from_file('~/.config/nvim/snippets/global.json'),
+    gen_loader.from_lang(),
+  },
+})
 
--- Pick --
+-- Pick
 require("mini.pick").setup({
   options = {
     content_from_bottom = true,
@@ -60,8 +84,7 @@ require("mini.pick").setup({
   },
 })
 
-
--- Diff --
+-- Diff
 require("mini.diff").setup({
   view = {
     style = "sign",
@@ -70,8 +93,7 @@ require("mini.diff").setup({
   }
 })
 
-
--- Notify --
+-- Notify
 local notify = require("mini.notify")
 notify.setup({
   winblend = 100,
@@ -85,10 +107,10 @@ notify.setup({
     end,
   },
 })
+
 vim.notify = notify.make_notify({})
 
-
--- Statusline --
+-- Statusline
 local mini_statusline = require("mini.statusline")
 local function statusline()
   local mode, mode_hl = mini_statusline.section_mode({ trunc_width = 120 })
@@ -118,18 +140,18 @@ mini_statusline.setup({
   },
 })
 
-
--- Starter --
+-- Starter
 local mini_starter = require("mini.starter")
 mini_starter.setup({
+  query_updaters = 'sebq',
   header = function()
     return ""
   end,
   items = {
-    { action = ":enew | Ex", name = "Explore", section = "" },
-    -- { action = ":source prev_session", name = "Previous session", section = "" },
-    { action = ":enew",      name = "Buffer",  section = "" },
-    { action = ":q",         name = "Quit",    section = "" },
+    { action = ":enew | Ex",  name = "Explore", section = "" },
+    { action = ":Pick files", name = "Search",  section = "" },
+    { action = ":enew",       name = "Buffer",  section = "" },
+    { action = ":q",          name = "Quit",    section = "" },
   },
   footer = function()
     local version_info = vim.version()
@@ -172,53 +194,6 @@ vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo", { fg = c.fg, bg = "#2A2A2A" })
 -- Treesitter --
 require("nvim-treesitter.configs").setup({
   ensure_installed = { "ruby" },
-  highlight = {
-    enable = true,
-    additional_vim_regex_highlighting = { 'ruby' },
-  },
-  indent = {
-    enable = true,
-    disable = { 'ruby' }
-  },
-})
-
-
--- AI --
-require("gp").setup({
-  openai_api_key = "dummy-secret",
-  providers = {
-    lmstudio = {
-      disable = false,
-      endpoint = "http://localhost:1234/v1/chat/completions",
-      secret = "dummy-secret",
-    },
-    openai = {
-      disable = true,
-    }
-  },
-  agents = {
-    {
-      name = "gpt-oss-20b",
-      provider = "lmstudio",
-      chat = true,
-      command = true,
-      model = {
-        model = "openai/gpt-oss-20b",
-      },
-      system_prompt = "",
-    },
-    {
-      name = "qwen3-coder-30b",
-      provider = "lmstudio",
-      chat = true,
-      command = true,
-      model = {
-        model = "qwen/qwen3-coder-30b",
-      },
-      system_prompt = "",
-    },
-  },
-  chat_user_prefix = ">> ",
-  chat_assistant_prefix = { "<< ", "[{{agent}}]" },
-  chat_template = require("gp.defaults").short_chat_template
+  highlight = { enable = true, additional_vim_regex_highlighting = { 'ruby' }, },
+  indent = { enable = true, disable = { 'ruby' } },
 })
