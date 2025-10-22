@@ -25,7 +25,6 @@ require("luasnip").setup()
 -- Snacks --
 require("snacks").setup({
   bigfile = { enabled = true },
-  lazygit = { enabled = true },
   indent = {
     enabled = true,
     animate = { enabled = false },
@@ -122,10 +121,12 @@ mini_statusline.setup({
 -- Starter --
 local mini_starter = require("mini.starter")
 mini_starter.setup({
+  query_updaters = 'sebq',
   header = function()
     return ""
   end,
   items = {
+    { action = ":Pick files", name = "Search", section = "" },
     { action = ":enew | Ex", name = "Explore", section = "" },
     -- { action = ":source prev_session", name = "Previous session", section = "" },
     { action = ":enew",      name = "Buffer",  section = "" },
@@ -180,45 +181,4 @@ require("nvim-treesitter.configs").setup({
     enable = true,
     disable = { 'ruby' }
   },
-})
-
-
--- AI --
-require("gp").setup({
-  openai_api_key = "dummy-secret",
-  providers = {
-    lmstudio = {
-      disable = false,
-      endpoint = "http://localhost:1234/v1/chat/completions",
-      secret = "dummy-secret",
-    },
-    openai = {
-      disable = true,
-    }
-  },
-  agents = {
-    {
-      name = "gpt-oss-20b",
-      provider = "lmstudio",
-      chat = true,
-      command = true,
-      model = {
-        model = "openai/gpt-oss-20b",
-      },
-      system_prompt = "",
-    },
-    {
-      name = "qwen3-coder-30b",
-      provider = "lmstudio",
-      chat = true,
-      command = true,
-      model = {
-        model = "qwen/qwen3-coder-30b",
-      },
-      system_prompt = "",
-    },
-  },
-  chat_user_prefix = ">> ",
-  chat_assistant_prefix = { "<< ", "[{{agent}}]" },
-  chat_template = require("gp.defaults").short_chat_template
 })

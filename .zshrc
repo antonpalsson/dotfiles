@@ -15,6 +15,7 @@ source <(fzf --zsh) # FZF
 # Env vars
 export DOTS="/Users/polle/Github/antonpalsson/dotfiles"
 export RIPGREP_CONFIG_PATH="$DOTS/.ripgreprc"
+export OPENCODE_CONFIG="$DOTS/opencode.jsonc"
 export EDITOR="nvim"
 export VISUAL="nvim"
 
@@ -23,6 +24,9 @@ alias sa="source ~/.zshrc"
 alias ".."="cd .."
 alias ll="ls -la"
 alias icat="kitten icat"
+alias k="kubectl"
+alias lgit="lazygit"
+alias ldocker="lazydocker"
 
 alias vim="nvim"
 alias v="nvim"
@@ -36,8 +40,6 @@ alias dce="docker compose exec"
 alias dcdu="docker compose down && docker compose up -d"
 function dcl() { docker compose logs "$@" -f }
 function dcb() { docker compose exec "$@" bash }
-
-alias k="kubectl"
 
 alias gss="git status --short"
 alias gd="git diff"
@@ -69,12 +71,10 @@ function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | 
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|wip\|tmp\|temp\|\*" | xargs git branch -D } # Cleanup branches
 
-alias lgit="lazygit"
-
 function auto() {
     local retries=0
     local max_retries=20
-    local delay=1
+    local delay=3
 
     while (( retries < max_retries )); do
         "$@" && retries=0 || (( retries++ ))
@@ -91,8 +91,6 @@ function auto() {
 # Booli
 if [ -f ~/.booli_zshrc ]; then
     source ~/.booli_zshrc
-else
-    print "~/.booli_zshrc not found."
 fi
 
 # Kosläpp

@@ -3,8 +3,16 @@ local H = {}
 
 local menus = {}
 
-function M.create_menu(name, togglable, items, callback, opts)
-  local lines = H.item_lines(items, togglable)
+function M.create_menu(name, items, callback, opts)
+  opts = vim.tbl_deep_extend('force', {
+    title = "Menu",
+    desc = "Menu desc",
+    togglable = false,
+    row = vim.o.lines - 1,
+    col = 0,
+  }, opts or {})
+
+  local lines = H.item_lines(items, opts.togglable)
 
   local longest_line = ""
   for _, str in ipairs(lines) do
@@ -14,12 +22,8 @@ function M.create_menu(name, togglable, items, callback, opts)
   end
 
   opts = vim.tbl_deep_extend('force', {
-    title = "Menu",
-    desc = "Menu desc",
     width = math.min(math.max(#longest_line + 2, 70), vim.o.columns),
     height = #lines,
-    row = vim.o.lines - 1,
-    col = 0,
   }, opts or {})
 
   menus[name] = {
@@ -27,7 +31,6 @@ function M.create_menu(name, togglable, items, callback, opts)
     items = items,
     lines = lines,
     selected = 1,
-    togglable = togglable,
     callback = callback,
     win = nil,
     buf = nil,
@@ -128,7 +131,7 @@ function H.trigger_selected(menu)
   local item = menu.items[current_line]
 
   if item then
-    if menu.togglable then
+    if menu.opts.togglable then
       item.enable = not item.enable
       menu.lines = H.item_lines(menu.items, true)
     end
@@ -143,7 +146,7 @@ function H.trigger_selected(menu)
 
     H.close_menu(menu)
 
-    if menu.togglable then
+    if menu.opts.togglable then
       M.open_menu(menu.name)
     end
   end

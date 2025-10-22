@@ -52,28 +52,6 @@ vim.lsp.config('ruby_lsp', {
 ---------
 -- Web --
 ---------
-add_snippets({ "html", "javascriptreact", "typescriptreact" }, {
-  s("tag", fmt(
-    [[
-    <{}>
-      {}
-    </{}>
-    ]], {
-      i(1, "div"), i(3, ""), rep(1)
-    })
-  )
-})
-
-add_snippets({ "html", "javascriptreact", "typescriptreact" }, {
-  s("cn", fmt(
-    [[
-    className='{}'
-    ]], {
-      i(1, "")
-    })
-  )
-})
-
 add_snippets({ "javascript", "typescript", "javascriptreact", "typescriptreact" }, {
   s("cl", fmt(
     [[
