@@ -10,13 +10,13 @@
     "desc": "Console log with label"
   },
   "Tag": {
-    "prefix": "tg",
+    "prefix": "tag",
     "body": "<$1>$0</$1>",
     "desc": "HTML tag"
   },
   "Tag with class": {
-    "prefix": "tgc",
-    "body": "<$1 className=\"$2\">$0</$1>",
-    "desc": "HTML tag with classname"
+    "prefix": "cla",
+    "body": "className=\"$0\"",
+    "desc": "className"
   }
 }

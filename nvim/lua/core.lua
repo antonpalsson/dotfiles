@@ -10,7 +10,6 @@ vim.o.wrap = false
 vim.o.number = true
 vim.o.signcolumn = "yes"
 vim.o.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.o.showmode = false
 vim.o.shiftwidth = 2
 vim.o.showtabline = 2
@@ -18,11 +17,13 @@ vim.o.expandtab = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.winborder = "single"
-vim.o.cursorline = true
+vim.o.cursorline = false
 vim.o.scrolloff = 10
 vim.o.inccommand = "split"
 vim.o.confirm = true
 
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.termguicolors = true
 
 -- Bindings --
 vim.keymap.set("n", "<leader>te", ":Ex<CR>", {})         -- Explore
@@ -45,6 +46,9 @@ vim.keymap.set("i", "<C-b>", "<Left>")
 -- Clipboard
 vim.keymap.set("v", "gy", function()
   vim.cmd('normal! "+y')
+  local text = vim.fn.getreg("+")
+  text = text:gsub("\n$", "")
+  vim.fn.setreg("+", text, "v")
   vim.notify("Copied to clipboard")
 end, { desc = "Copy to clipboard" })
 

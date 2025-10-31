@@ -28,10 +28,15 @@ MiniDeps.add({ source = "https://github.com/folke/snacks.nvim" })
 MiniDeps.add({ source = "https://github.com/Saghen/blink.cmp" })
 MiniDeps.add({ source = "https://github.com/tpope/vim-fugitive" })
 MiniDeps.add({ source = "https://github.com/m4xshen/hardtime.nvim" })
+MiniDeps.add({ source = "https://github.com/github/copilot.vim" })
 
+
+-- My modules --
+require("menu").setup({})
+require("session").setup({})
 
 -- Plugins --
-require("plugins")
+require("plugin")
 require("lsp")
 
 
@@ -41,20 +46,30 @@ vim.keymap.set("n", "grd", ":Pick lsp scope='declaration'<CR>", {})
 vim.keymap.set("n", "gri", ':Pick lsp scope="implementation"<CR>', {})
 vim.keymap.set("n", "grt", ':Pick lsp scope="type_declaration"<CR>', {})
 vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, {})
+
 vim.keymap.set("n", "tgd", function()
   vim.cmd("tab split"); vim.lsp.buf.definition()
 end, {})
+
+vim.keymap.set("n", "]d", function()
+  vim.diagnostic.jump({ count = 1, on_jump = function() vim.diagnostic.open_float() end })
+end, {})
+vim.keymap.set("n", "[d", function()
+  vim.diagnostic.jump({ count = -1, on_jump = function() vim.diagnostic.open_float() end })
+end, {})
+
 vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, {})
 vim.keymap.set("n", "<leader>lf", function() vim.diagnostic.open_float() end, {})
 
 vim.keymap.set("n", "<leader>ld", function()
   local current_virtual_lines = vim.diagnostic.config().virtual_lines
+
   vim.diagnostic.config({
     virtual_lines = not current_virtual_lines
   })
 end, { silent = true })
 
-vim.diagnostic.config({ virtual_lines = false, underline = false })
+vim.diagnostic.config({ virtual_lines = false, underline = true })
 
 
 -- Pick bindings --
@@ -71,16 +86,46 @@ vim.keymap.set("n", "<leader>fo", ":Pick oldfiles<CR>", {})
 vim.keymap.set("n", "<leader>ft", function() Snacks.explorer() end, {})
 
 
--- Git bindings --
-vim.keymap.set("n", "<leader>lgd", ":Gvdiffsplit<CR>", {})
-vim.keymap.set("n", "<leader>lgs", ":Gvsplit<CR>", {})
-vim.keymap.set("n", "<leader>lgb", ":Git blame<CR>", {})
+-- Copilot bindings --
+vim.g.copilot_enabled = 0
+vim.keymap.set('i', '<C-g>w', '<Plug>(copilot-accept-word)')
+vim.keymap.set('i', '<C-g>l', '<Plug>(copilot-accept-line)')
+vim.keymap.set('i', '<C-g>x', '<Plug>(copilot-dismiss)')
 
 
--- Hardtime toggle --
-local hardtime_enabled = true
-vim.keymap.set("n", "<leader>tht", function()
-  hardtime_enabled = not hardtime_enabled
-  vim.cmd("Hardtime " .. (hardtime_enabled and "enable" or "disable"))
-  vim.notify("Hardtime: " .. tostring(hardtime_enabled))
-end, {})
+-- Toggle menu --
+Menu.create({
+  name = "Toggle",
+  title = "Toggle stuff",
+  togglable = true,
+  auto_close = false,
+  items = {
+    {
+      label = 'Copilot',
+      name = 'copilot',
+      callback = function(item)
+        if item.enable then
+          vim.g.copilot_enabled = 1
+          vim.notify("Copilot: enabled")
+        else
+          vim.g.copilot_enabled = 0
+          vim.notify("Copilot: disabled")
+        end
+      end
+    },
+    {
+      label = 'Hardtime',
+      name = 'hardtime',
+      enable = true,
+      callback = function(item)
+        if item.enable then
+          require("hardtime").enable()
+          vim.notify("Hardtime: enabled")
+        else
+          require("hardtime").disable()
+          vim.notify("Hardtime: disabled")
+        end
+      end
+    },
+  }
+})

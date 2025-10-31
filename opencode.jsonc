@@ -1,6 +1,172 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "github-copilot/claude-sonnet-4.5",
+  "tools": {
+    "bash": true,
+    "edit": true,
+    "write": true,
+    "patch": true,
+    "read": true,
+    "grep": true,
+    "glob": true,
+    "list": true,
+    "todowrite": true,
+    "todoread": true,
+    "webfetch": true,
+    "task": true
+  },
   "permission": {
-    "*": "ask"
-  }
+    "bash": {
+      "*": "allow",
+      "git *": "deny"
+    },
+    "edit": "allow",
+    "write": "allow",
+    "patch": "allow",
+    "read": "allow",
+    "grep": "allow",
+    "glob": "allow",
+    "list": "allow",
+    "todowrite": "allow",
+    "todoread": "allow",
+    "webfetch": "allow",
+    "task": "allow"
+  },
+  "agent": {
+    "build": {
+      "tools": {
+        "bash": true,
+        "edit": true,
+        "write": true,
+        "patch": true,
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "list": true,
+        "todowrite": true,
+        "todoread": true,
+        "webfetch": true,
+        "task": true
+      }
+    },
+    "plan": {
+      "tools": {
+        "bash": true,
+        "edit": false,
+        "write": false,
+        "patch": false,
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "list": true,
+        "todowrite": true,
+        "todoread": true,
+        "webfetch": true,
+        "task": true
+      }
+    },
+    "review": {
+      "description": "Reviews code for best practices and potential issues",
+      "mode": "primary",
+      "prompt": "You are a code reviewer. Focus on readability, maintainability, good practice and security.",
+      "tools": {
+        "bash": true,
+        "edit": false,
+        "write": false,
+        "patch": false,
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "list": true,
+        "todowrite": true,
+        "todoread": true,
+        "webfetch": true,
+        "task": true
+      },
+      "options": {
+        "reasoningEffort": "medium",
+        "textVerbosity": "low"
+      }
+    },
+    "question": {
+      "description": "Answers questions about coding",
+      "mode": "primary",
+      "prompt": "You are an expert programmer and gives short answers.",
+      "tools": {
+        "bash": false,
+        "edit": false,
+        "write": false,
+        "patch": false,
+        "read": true,
+        "grep": false,
+        "glob": false,
+        "list": false,
+        "todowrite": false,
+        "todoread": false,
+        "webfetch": false,
+        "task": false
+      },
+      "options": {
+        "reasoningEffort": "low",
+        "textVerbosity": "low"
+      }
+    }
+  },
+  "disabled_providers": [
+    // "github-copilot",
+    "moonshotai-cn",
+    "lucidquery",
+    "moonshotai",
+    "zai-coding-plan",
+    "alibaba",
+    "xai",
+    "vultr",
+    "nvidia",
+    "upstage",
+    "groq",
+    "mistral",
+    "vercel",
+    "nebius",
+    "deepseek",
+    "alibaba-cn",
+    "google-vertex-anthropic",
+    "venice",
+    "chutes",
+    "cortecs",
+    "github-models",
+    "togetherai",
+    "azure",
+    "baseten",
+    "huggingface",
+    "opencode",
+    "fastrouter",
+    "google",
+    "google-vertex",
+    "cloudflare-workers-ai",
+    "inception",
+    "wandb",
+    "openai",
+    "zhipuai-coding-plan",
+    "perplexity",
+    "openrouter",
+    "zenmux",
+    "v0",
+    "synthetic",
+    "deepinfra",
+    "zhipuai",
+    "submodel",
+    "zai",
+    "inference",
+    "requesty",
+    "morph",
+    "lmstudio",
+    "anthropic",
+    "aihubmix",
+    "fireworks-ai",
+    "modelscope",
+    "llama",
+    "scaleway",
+    "amazon-bedrock",
+    "cerebras"
+  ]
 }
