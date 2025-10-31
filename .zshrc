@@ -27,6 +27,7 @@ alias icat="kitten icat"
 alias k="kubectl"
 alias lgit="lazygit"
 alias ldocker="lazydocker"
+alias oc="opencode"
 
 alias vim="nvim"
 alias v="nvim"
@@ -37,6 +38,7 @@ function ts() { tmux new -s "$*" }
 
 alias dc="docker compose"
 alias dce="docker compose exec"
+alias dcr="docker compose run --rm"
 alias dcdu="docker compose down && docker compose up -d"
 function dcl() { docker compose logs "$@" -f }
 function dcb() { docker compose exec "$@" bash }

@@ -28,10 +28,16 @@ MiniDeps.add({ source = "https://github.com/folke/snacks.nvim" })
 MiniDeps.add({ source = "https://github.com/Saghen/blink.cmp" })
 MiniDeps.add({ source = "https://github.com/tpope/vim-fugitive" })
 MiniDeps.add({ source = "https://github.com/m4xshen/hardtime.nvim" })
+MiniDeps.add({ source = "https://github.com/github/copilot.vim" })
+MiniDeps.add({ source = "https://github.com/NickvanDyke/opencode.nvim" })
 
+
+-- My modules --
+require("menu").setup({})
+require("session").setup({})
 
 -- Plugins --
-require("plugins")
+require("plugin")
 require("lsp")
 
 
@@ -41,14 +47,17 @@ vim.keymap.set("n", "grd", ":Pick lsp scope='declaration'<CR>", {})
 vim.keymap.set("n", "gri", ':Pick lsp scope="implementation"<CR>', {})
 vim.keymap.set("n", "grt", ':Pick lsp scope="type_declaration"<CR>', {})
 vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, {})
+
 vim.keymap.set("n", "tgd", function()
   vim.cmd("tab split"); vim.lsp.buf.definition()
 end, {})
+
 vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, {})
 vim.keymap.set("n", "<leader>lf", function() vim.diagnostic.open_float() end, {})
 
 vim.keymap.set("n", "<leader>ld", function()
   local current_virtual_lines = vim.diagnostic.config().virtual_lines
+
   vim.diagnostic.config({
     virtual_lines = not current_virtual_lines
   })
@@ -71,16 +80,40 @@ vim.keymap.set("n", "<leader>fo", ":Pick oldfiles<CR>", {})
 vim.keymap.set("n", "<leader>ft", function() Snacks.explorer() end, {})
 
 
--- Git bindings --
-vim.keymap.set("n", "<leader>lgd", ":Gvdiffsplit<CR>", {})
-vim.keymap.set("n", "<leader>lgs", ":Gvsplit<CR>", {})
-vim.keymap.set("n", "<leader>lgb", ":Git blame<CR>", {})
+-- Copilot bindings --
+vim.keymap.set('i', '<C-g>w', '<Plug>(copilot-accept-word)')
+vim.keymap.set('i', '<C-g>l', '<Plug>(copilot-accept-line)')
+vim.keymap.set('i', '<C-g>x', '<Plug>(copilot-dismiss)')
+vim.keymap.set('i', '<C-g>n>', '<Plug>(copilot-next)')
+vim.keymap.set('i', '<C-g>p>', '<Plug>(copilot-previous)')
 
 
--- Hardtime toggle --
-local hardtime_enabled = true
-vim.keymap.set("n", "<leader>tht", function()
-  hardtime_enabled = not hardtime_enabled
-  vim.cmd("Hardtime " .. (hardtime_enabled and "enable" or "disable"))
-  vim.notify("Hardtime: " .. tostring(hardtime_enabled))
-end, {})
+-- Opencode bindings --
+-- @buffers   	        Open buffers
+-- @cursor 	        Cursor position
+-- @selection 	        Visual selection
+-- @this 	        Visual selection if any, else cursor position
+-- @visible 	        Visible text
+-- @diagnostics 	Current buffer diagnostics
+-- @quickfix 	        Quickfix list
+-- @diff 	        Git diff
+-- @grapple 	        grapple.nvim tags
+vim.keymap.set({ "n", "x" }, "<C-g>a", function()
+  require("opencode").ask("", { submit = true })
+end, { desc = "Ask opencode" })
+
+vim.keymap.set({ "n", "x" }, "<C-g>s", function()
+  require("opencode").select()
+end, { desc = "Execute opencode action…" })
+
+vim.keymap.set({ "n", "t" }, "<C-g>t", function()
+  require("opencode").toggle()
+end, { desc = "Toggle opencode" })
+
+-- vim.keymap.set("n", "<S-C-u>", function()
+--   require("opencode").command("session.half.page.up")
+-- end, { desc = "opencode half page up" })
+--
+-- vim.keymap.set("n", "<S-C-d>", function()
+--   require("opencode").command("session.half.page.down")
+-- end, { desc = "opencode half page down" })

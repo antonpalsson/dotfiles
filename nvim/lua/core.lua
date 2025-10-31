@@ -18,7 +18,7 @@ vim.o.expandtab = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.winborder = "single"
-vim.o.cursorline = true
+vim.o.cursorline = false
 vim.o.scrolloff = 10
 vim.o.inccommand = "split"
 vim.o.confirm = true
@@ -45,6 +45,9 @@ vim.keymap.set("i", "<C-b>", "<Left>")
 -- Clipboard
 vim.keymap.set("v", "gy", function()
   vim.cmd('normal! "+y')
+  local text = vim.fn.getreg("+")
+  text = text:gsub("\n$", "")
+  vim.fn.setreg("+", text, "v")
   vim.notify("Copied to clipboard")
 end, { desc = "Copy to clipboard" })
 
@@ -145,3 +148,72 @@ end, {})
 vim.api.nvim_create_autocmd("VimResized", {
   command = "wincmd =",
 })
+
+-- Tabline
+function _G.custom_tabline()
+  local tabline = ''
+  local total_tabs = vim.fn.tabpagenr('$')
+  
+  for i = 1, total_tabs do
+    local is_current = i == vim.fn.tabpagenr()
+    
+    if is_current then
+      tabline = tabline .. '%#TabLineSel#'
+    else
+      tabline = tabline .. '%#TabLine#'
+    end
+    
+    tabline = tabline .. ' '
+    local buflist = vim.fn.tabpagebuflist(i)
+    local winnr = vim.fn.tabpagewinnr(i)
+    local bufname = vim.fn.bufname(buflist[winnr])
+    
+    if bufname ~= '' then
+      local filename = vim.fn.fnamemodify(bufname, ':t')
+      local basename = vim.fn.fnamemodify(filename, ':r')
+      
+      local cwd = vim.fn.getcwd()
+      local fullpath = vim.fn.fnamemodify(bufname, ':p')
+      local relpath = vim.fn.fnamemodify(fullpath, ':~:.')
+      
+      local parts = {}
+      for part in string.gmatch(relpath, '[^/]+') do
+        table.insert(parts, part)
+      end
+      
+      local display = ''
+      
+      if basename == 'index' then
+        for j = 1, #parts - 2 do
+          display = display .. string.sub(parts[j], 1, 1) .. '/'
+        end
+        if #parts >= 2 then
+          display = display .. parts[#parts - 1] .. '/'
+        end
+        display = display .. filename
+      else
+        for j = 1, #parts - 1 do
+          display = display .. string.sub(parts[j], 1, 1) .. '/'
+        end
+        display = display .. filename
+      end
+      
+      tabline = tabline .. display
+    else
+      tabline = tabline .. '[No Name]'
+    end
+    
+    tabline = tabline .. ' '
+    
+    if i < total_tabs then
+      tabline = tabline .. '%#TabLineSeparator#'
+      tabline = tabline .. ' '
+    end
+  end
+  
+  tabline = tabline .. '%#TabLineFill#'
+  
+  return tabline
+end
+
+vim.o.tabline = '%!v:lua.custom_tabline()'
