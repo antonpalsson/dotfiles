@@ -28,11 +28,13 @@ MiniDeps.add({ source = "https://github.com/folke/snacks.nvim" })
 MiniDeps.add({ source = "https://github.com/Saghen/blink.cmp" })
 MiniDeps.add({ source = "https://github.com/tpope/vim-fugitive" })
 MiniDeps.add({ source = "https://github.com/m4xshen/hardtime.nvim" })
+MiniDeps.add({ source = "https://github.com/github/copilot.vim" })
 
 
 -- Plugins --
-require("plugins")
+require("plugin")
 require("lsp")
+require("session")
 
 
 -- LSP bindings --

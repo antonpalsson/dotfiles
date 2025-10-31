@@ -1,3 +1,11 @@
+-- Copilot --
+vim.keymap.set('i', '<C-g>w', '<Plug>(copilot-accept-word)')
+vim.keymap.set('i', '<C-g>l', '<Plug>(copilot-accept-line)')
+vim.keymap.set('i', '<C-g>d', '<Plug>(copilot-dismiss)')
+vim.keymap.set('i', '<C-g>n>', '<Plug>(copilot-next)')
+vim.keymap.set('i', '<C-g>p>', '<Plug>(copilot-previous)')
+
+
 -- Hardtime --
 require("hardtime").setup({
   restricted_keys = {
@@ -143,15 +151,15 @@ mini_statusline.setup({
 -- Starter
 local mini_starter = require("mini.starter")
 mini_starter.setup({
-  query_updaters = 'sebq',
+  query_updaters = 'elbq',
   header = function()
     return ""
   end,
   items = {
-    { action = ":enew | Ex",  name = "Explore", section = "" },
-    { action = ":Pick files", name = "Search",  section = "" },
-    { action = ":enew",       name = "Buffer",  section = "" },
-    { action = ":q",          name = "Quit",    section = "" },
+    { action = ":enew | Ex",    name = "Explore",      section = "" },
+    { action = ":Session load", name = "Load session", section = "" },
+    { action = ":enew",         name = "Buffer",       section = "" },
+    { action = ":q",            name = "Quit",         section = "" },
   },
   footer = function()
     local version_info = vim.version()
@@ -194,6 +202,10 @@ vim.api.nvim_set_hl(0, "MiniStatuslineFileinfo", { fg = c.fg, bg = "#2A2A2A" })
 -- Treesitter --
 require("nvim-treesitter.configs").setup({
   ensure_installed = { "ruby" },
+  auto_install = false,
+  sync_install = false,
+  ignore_install = { "" },
+  modules = {},
   highlight = { enable = true, additional_vim_regex_highlighting = { 'ruby' }, },
   indent = { enable = true, disable = { 'ruby' } },
 })

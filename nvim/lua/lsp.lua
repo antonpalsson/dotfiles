@@ -80,20 +80,24 @@ local lua_ls_my = setup_lsp('lua_ls_my', 'Lua LS', 'lua_ls', {
 
 -- LSP menu --
 local menus = require("menu")
-menus.create_menu('lspt', {
-    { label = ts_ls_my.label,            name = ts_ls_my.name,            enable = false },
-    { label = tl_ls_my.label,            name = tl_ls_my.name,            enable = false },
-    { label = eslint_my.label,           name = eslint_my.name,           enable = false },
-    { label = lua_ls_my.label,           name = lua_ls_my.name,           enable = false },
-    { label = ruby_lsp_my.label,         name = ruby_lsp_my.name,         enable = false },
-    { label = ts_ls_node_modules.label,  name = ts_ls_node_modules.name,  enable = false },
-    { label = tl_ls_node_modules.label,  name = tl_ls_node_modules.name,  enable = false },
-    { label = eslint_node_modules.label, name = eslint_node_modules.name, enable = false },
-    { label = ruby_lsp_lspdock.label,    name = ruby_lsp_lspdock.name,    enable = false },
+menus.create_menu({
+  name = "Lspt",
+  title = "Toggle LSP servers",
+  togglable = true,
+  auto_close = false,
+  items = {
+    { label = ts_ls_my.label,            name = ts_ls_my.name, },
+    { label = tl_ls_my.label,            name = tl_ls_my.name, },
+    { label = eslint_my.label,           name = eslint_my.name, },
+    { label = lua_ls_my.label,           name = lua_ls_my.name, },
+    { label = ruby_lsp_my.label,         name = ruby_lsp_my.name, },
+    { label = ts_ls_node_modules.label,  name = ts_ls_node_modules.name, },
+    { label = tl_ls_node_modules.label,  name = tl_ls_node_modules.name, },
+    { label = eslint_node_modules.label, name = eslint_node_modules.name, },
+    { label = ruby_lsp_lspdock.label,    name = ruby_lsp_lspdock.name, },
   },
-  function(item)
+  callback = function(item)
     vim.lsp.enable(item.name, item.enable)
     vim.notify(item.name .. ": " .. tostring(item.enable))
-  end,
-  { title = "Toggle LSP servers", desc = "Toggle LSP servers", togglable = true }
-)
+  end
+})

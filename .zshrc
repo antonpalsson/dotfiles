@@ -27,6 +27,7 @@ alias icat="kitten icat"
 alias k="kubectl"
 alias lgit="lazygit"
 alias ldocker="lazydocker"
+alias oc="opencode"
 
 alias vim="nvim"
 alias v="nvim"
