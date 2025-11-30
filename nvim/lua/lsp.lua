@@ -1,23 +1,8 @@
--- Helper --
-local function setup(label, name, lspconfig, opts)
-  opts = opts or {}
+require('devcontainers').setup({})
 
-  local default_config = dofile(
-    vim.fn.stdpath('data') ..
-    '/site/pack/deps/opt/nvim-lspconfig/lsp/' ..
-    lspconfig ..
-    '.lua'
-  )
-
-  local config = vim.tbl_deep_extend('force', default_config, opts)
-  vim.lsp.config(name, config)
-
-  return { label = label, name = name, config = config }
-end
-
-
--- Ruby --
-local ruby_lsp_default = setup('Ruby LSP', 'ruby_lsp_default', 'ruby_lsp', {
+-- Ruby
+vim.lsp.config('ruby_lsp', {
+  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.ruby_lsp.cmd),
   init_options = {
     addonSettings = {
       ["Ruby LSP Rails"] = { enablePendingMigrationsPrompt = false, },
@@ -25,36 +10,25 @@ local ruby_lsp_default = setup('Ruby LSP', 'ruby_lsp_default', 'ruby_lsp', {
   },
 })
 
-local ruby_lsp_lspdock = setup('Ruby LSP (lspdock)', 'ruby_lsp_lspdock', 'ruby_lsp', {
-  cmd = { 'lspdock', '--exec', 'ruby-lsp' },
-  init_options = {
-    addonSettings = {
-      ["Ruby LSP Rails"] = { enablePendingMigrationsPrompt = false, },
-    },
-  },
+-- Web
+vim.lsp.config('ts_ls', {
+  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.ts_ls.cmd),
+  -- cmd = { 'yarn', 'typescript-language-server', '--stdio' }
 })
 
-
--- Web --
-local ts_ls_default = setup('Typescript LS', 'ts_ls_default', 'ts_ls')
-local tl_ls_default = setup('Tailwind LS', 'tl_ls_default', 'tailwindcss')
-local eslint_default = setup('Eslint', 'eslint_default', 'eslint')
-
-local ts_ls_node_modules = setup('Typescript LS (node modules)', 'ts_ls_node_modules', 'ts_ls', {
-  cmd = { 'node_modules/.bin/typescript-language-server', '--stdio' },
+vim.lsp.config('eslint', {
+  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.eslint.cmd),
+  -- cmd = { 'yarn', 'vscode-eslint-language-server', '--stdio' }
 })
 
-local tl_ls_node_modules = setup('Tailwind LS (node modules)', 'tl_ls_node_modules', 'tailwindcss', {
-  cmd = { 'node_modules/.bin/tailwindcss-language-server', '--stdio' },
+vim.lsp.config('tailwindcss', {
+  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.tailwindcss.cmd),
+  -- cmd = { 'yarn', 'tailwindcss-language-server', '--stdio' }
 })
-
-local eslint_node_modules = setup('Eslint (node modules)', 'eslint_node_modules', 'eslint', {
-  cmd = { 'node_modules/.bin/vscode-eslint-language-server', '--stdio' },
-})
-
 
 -- Lua --
-local lua_ls_default = setup('Lua LS', 'lua_ls_default', 'lua_ls', {
+vim.lsp.config('lua_ls', {
+  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.lua_ls.cmd),
   settings = {
     Lua = {
       runtime = { version = 'LuaJIT' },
@@ -70,6 +44,12 @@ local lua_ls_default = setup('Lua LS', 'lua_ls_default', 'lua_ls', {
   },
 })
 
+-- Copilot bindings --
+vim.g.copilot_enabled = 0
+vim.keymap.set('i', '<C-g>w', '<Plug>(copilot-accept-word)')
+vim.keymap.set('i', '<C-g>l', '<Plug>(copilot-accept-line)')
+vim.keymap.set('i', '<C-g>x', '<Plug>(copilot-dismiss)')
+
 
 -- LSP menu --
 Menu.create({
@@ -78,15 +58,24 @@ Menu.create({
   togglable = true,
   auto_close = false,
   items = {
-    { label = ts_ls_default.label,       name = ts_ls_default.name, },
-    { label = eslint_default.label,      name = eslint_default.name, },
-    { label = tl_ls_default.label,       name = tl_ls_default.name, },
-    { label = lua_ls_default.label,      name = lua_ls_default.name, },
-    { label = ruby_lsp_default.label,    name = ruby_lsp_default.name, },
-    { label = ts_ls_node_modules.label,  name = ts_ls_node_modules.name, },
-    { label = eslint_node_modules.label, name = eslint_node_modules.name, },
-    { label = tl_ls_node_modules.label,  name = tl_ls_node_modules.name, },
-    { label = ruby_lsp_lspdock.label,    name = ruby_lsp_lspdock.name, },
+    { label = "Typescript ls", name = 'ts_ls' },
+    { label = "Eslint",        name = 'eslint' },
+    { label = "Tailwind ls",   name = 'tailwindcss' },
+    { label = "Ruby lsp",      name = 'ruby_lsp' },
+    { label = "Lua ls",        name = 'lua_ls' },
+    {
+      label = 'Copilot',
+      name = 'copilot',
+      callback = function(item)
+        if item.enable then
+          vim.g.copilot_enabled = 1
+          vim.notify("Copilot: enabled")
+        else
+          vim.g.copilot_enabled = 0
+          vim.notify("Copilot: disabled")
+        end
+      end
+    },
   },
   callback = function(item)
     vim.lsp.enable(item.name, item.enable)

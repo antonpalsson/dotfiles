@@ -1,36 +1,39 @@
 # Paths
 typeset -U path
-path+=($HOME '/bin' '/usr/local/bin')
-path+=($PATH '/Users/polle/.lmstudio/bin') # LM studio
+path=(
+  /Users/polle/.local/share/mise/shims
+  /opt/homebrew/bin
+  /usr/bin
+  /usr/sbin
+  /bin
+  /sbin
+)
 
 # Prompt
 PROMPT='%B%F{green}%n@%m%f%b %f%F{blue}%~%f %# '
 
 # CLI apps
-eval "$(/opt/homebrew/bin/brew shellenv)" # Homebrew
-eval "$(mise activate zsh)" # Mise RVM
+eval "$(mise activate --shims)" # Mise
 eval "$(zoxide init zsh)" # Zoxide
-source <(fzf --zsh) # FZF
 
 # Env vars
 export DOTS="/Users/polle/Github/antonpalsson/dotfiles"
 export RIPGREP_CONFIG_PATH="$DOTS/.ripgreprc"
-export OPENCODE_CONFIG="$DOTS/opencode.jsonc"
 export EDITOR="nvim"
-export VISUAL="nvim"
 
 # Aliases
-alias sa="source ~/.zshrc"
 alias ".."="cd .."
+alias "..."="cd ../.."
+alias "...."="cd ../../.."
 alias ll="ls -la"
+alias sa="source ~/.zshrc"
+
 alias icat="kitten icat"
 alias k="kubectl"
-alias lgit="lazygit"
-alias ldocker="lazydocker"
-alias oc="opencode"
+alias lazygit="lazygit"
+alias lazydocker="lazydocker"
 
 alias vim="nvim"
-alias v="nvim"
 
 alias ta="tmux attach"
 alias tl="tmux list-sessions"
@@ -45,11 +48,9 @@ function dcb() { docker compose exec "$@" bash }
 
 alias gss="git status --short"
 alias gd="git diff"
-alias gll="git log"
 alias glg="git log --stat"
 alias ga="git add"
 alias gaa="git add --all"
-alias gap="git add --patch"
 alias gc="git commit"
 alias gcmsg="git commit --message"
 alias gc!="git commit --amend"
@@ -59,7 +60,6 @@ alias gcpa="git cherry-pick --abort"
 alias gcpc="git cherry-pick --continue"
 alias gb="git branch"
 alias gco="git checkout"
-alias grb="git rebase"
 alias grbi="git rebase --interactive"
 alias grba="git rebase --abort"
 alias grbc="git rebase --continue"
@@ -67,33 +67,11 @@ alias gl="git pull"
 alias gf="git fetch"
 alias gp="git push"
 alias gpf="git push --force-with-lease"
-alias gpf!="git push --force"
-function gpsup() { git branch --show-current | xargs git push --set-upstream origin } # Set upstream
 function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | head -1 | xargs git checkout } # Checkout master/main
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|wip\|tmp\|temp\|\*" | xargs git branch -D } # Cleanup branches
-
-function auto() {
-    local retries=0
-    local max_retries=20
-    local delay=3
-
-    while (( retries < max_retries )); do
-        "$@" && retries=0 || (( retries++ ))
-
-        if (( retries < max_retries )); then
-            sleep $delay
-            echo "Retrying ..."
-        else
-            echo "Max retries ($max_retries) reached. Giving up."
-        fi
-    done
-}
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then
     source ~/.booli_zshrc
 fi
-
-# Kosläpp
-# ((RANDOM % 12 == 0)) && echo Mooooooo | cowsay && echo ""

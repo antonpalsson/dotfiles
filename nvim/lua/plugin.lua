@@ -1,19 +1,3 @@
--- Hardtime --
-require("hardtime").setup({
-  restricted_keys = {
-    ["h"] = false,
-    ["j"] = false,
-    ["k"] = false,
-    ["l"] = false,
-  },
-  resetting_keys = {
-    ["gp"] = false,
-    ["gP"] = false,
-    ["gq"] = false,
-  },
-})
-
-
 -- Blink --
 require("blink.cmp").setup({
   fuzzy = { implementation = "lua" },
