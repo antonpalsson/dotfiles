@@ -1,0 +1,17 @@
+background = 000000
+foreground = ffffff
+
+title = " "
+macos-titlebar-proxy-icon = hidden
+
+font-family = JetBrains Mono
+font-size = 13
+font-style-bold = true
+font-thicken = true
+font-thicken-strength = 31
+
+macos-icon = custom
+macos-custom-icon = ~/.config/ghostty/icon.png
+
+mouse-hide-while-typing = true
+scrollback-limit = 1000000

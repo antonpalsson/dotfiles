@@ -1,6 +1,10 @@
--- Options --
+-- Options
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.g.netrw_banner = 0
+
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.termguicolors = true
 
 vim.o.mouse = "a"
 vim.o.mousescroll = "ver:2,hor:0"
@@ -22,130 +26,164 @@ vim.o.scrolloff = 10
 vim.o.inccommand = "split"
 vim.o.confirm = true
 
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
-vim.opt.termguicolors = true
+-- Initial plugins
+MiniDeps.now(function()
+  -- Tabline
+  require("tabline").setup({})
 
--- Bindings --
-vim.keymap.set("n", "<leader>te", ":Ex<CR>", {})         -- Explore
-vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", {})     -- New tab
-vim.keymap.set("n", "<leader>tN", ":0tabnew<CR>", {})    -- New tab to the far left
-vim.keymap.set("n", "<leader>q", ":quit<CR>", {})        -- Close tab
-vim.keymap.set("n", "<leader>w", ":write<CR>", {})       -- Wrtie tab
-vim.keymap.set("n", "<leader>th", ":tabmove -1<CR>", {}) -- Move tab left/right
-vim.keymap.set("n", "<leader>tl", ":tabmove +1<CR>", {})
-vim.keymap.set("n", "<leader>td", ":tab split<CR>", {})  -- Duplicate tab
-vim.keymap.set("n", "<S-TAB>", "gT", {})                 -- Switch tabs left/right
-vim.keymap.set("n", "<TAB>", "gt", {})
-vim.keymap.set("v", "<C-u>", ":move '<-2<CR>gv=gv", {})  -- Move selecion up/down
-vim.keymap.set("v", "<C-d>", ":move '>+1<CR>gv=gv", {})
-vim.keymap.set("v", ">", ">gv", {})                      -- Move selection left/right
-vim.keymap.set("v", "<", "<gv", {})
-vim.keymap.set("i", "<C-f>", "<Right>")                  -- Mini jumps
-vim.keymap.set("i", "<C-b>", "<Left>")
+  -- Theme
+  require("vague").setup({
+    transparent = true,
+    italic = false
+  })
 
--- Clipboard
-vim.keymap.set("v", "gy", function()
-  vim.cmd('normal! "+y')
-  local text = vim.fn.getreg("+")
-  text = text:gsub("\n$", "")
-  vim.fn.setreg("+", text, "v")
-  vim.notify("Copied to clipboard")
-end, { desc = "Copy to clipboard" })
+  vim.cmd.colorscheme("vague")
 
-vim.keymap.set("n", "gy", function()
-  local line = vim.fn.getline(".")
-  local trimmed = line:gsub("^%s+", "")
-  vim.fn.setreg("+", trimmed)
-  vim.notify("Copied line to clipboard")
-end, { desc = "Copy line to clipboard" })
+  -- Custom highlighting
+  local theme_fg = require("vague.config.internal").current.colors.fg
+  local colors = {
+    black = '#000000',
+    gray1 = '#1e1e1e',
+    gray2 = '#323232',
+    gray3 = '#464646',
+    gray4 = '#5a5a5a',
+    white = '#ffffff',
+    fg = theme_fg,
+  }
 
-vim.keymap.set("n", "gn", function()
-  vim.fn.setreg("+", vim.fn.expand("%:t"))
-  vim.notify("Copied: " .. vim.fn.expand("%:t"))
-end, { desc = "Copy filename" })
+  vim.api.nvim_set_hl(0, "TabLineFill", { fg = colors.fg, bg = colors.black })
+  vim.api.nvim_set_hl(0, "TabLineSel", { fg = colors.white, bg = colors.gray4 })
+  vim.api.nvim_set_hl(0, "TabLine", { fg = colors.gray4, bg = colors.black })
+  vim.api.nvim_set_hl(0, "MiniStatuslineDevinfo", { fg = colors.fg, bg = colors.gray3 })
+  vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { fg = colors.fg, bg = colors.gray2 })
+  vim.api.nvim_set_hl(0, "MiniStatuslineDivide", { fg = colors.fg, bg = colors.black })
+  vim.api.nvim_set_hl(0, "MiniStatuslineFiletype", { fg = colors.fg, bg = colors.gray2 })
+  vim.api.nvim_set_hl(0, "MiniStatuslineSearch", { fg = colors.fg, bg = colors.gray3 })
+  vim.api.nvim_set_hl(0, "SnacksIndent", { fg = colors.gray1 })
+  vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = colors.gray1 })
 
-vim.keymap.set("n", "gf", function()
-  vim.fn.setreg("+", vim.fn.expand("%"))
-  vim.notify("Copied: " .. vim.fn.expand("%"))
-end, { desc = "Copy relative file path" })
+  -- Statusline
+  local mini_statusline = require("mini.statusline")
+  mini_statusline.setup({
+    content = {
+      active = function()
+        local mode, mode_hl = mini_statusline.section_mode({ trunc_width = 120 })
+        local git           = mini_statusline.section_git({ trunc_width = 40 })
+        local diff          = mini_statusline.section_diff({ trunc_width = 75, icon = "" })
+        local diagnostics   = mini_statusline.section_diagnostics({ trunc_width = 75 })
+        local lsp           = mini_statusline.section_lsp({ icon = "λ", trunc_width = 75 })
+        local filename      = mini_statusline.section_filename({ trunc_width = 9999 }) -- Always truncate
+        local search        = mini_statusline.section_searchcount({ trunc_width = 75 })
+        local percent       = "%2p%%"
+        local location      = "%3l:%-2c"
 
-vim.keymap.set("n", "gF", function()
-  vim.fn.setreg("+", vim.fn.expand("%:p"))
-  vim.notify("Copied: " .. vim.fn.expand("%:p"))
-end, { desc = "Copy absolute file path" })
-
-vim.keymap.set({ "n", "v" }, "gp", function()
-  vim.cmd('normal! "+p')
-end, { desc = "Paste from clipboard" })
-
-vim.keymap.set({ "n", "v" }, "gP", function()
-  vim.cmd('normal! "+P')
-end, { desc = "Paste before clipboard" })
-
--- Toggle wrap
-vim.keymap.set("n", "<leader>tw", function()
-  vim.o.wrap = not vim.o.wrap
-  vim.notify("Wrap: " .. tostring(vim.o.wrap))
-end, {})
-
--- Toggle relativenumbers
-vim.keymap.set("n", "<leader>tr", function()
-  vim.o.relativenumber = not vim.o.relativenumber
-  vim.notify("Relative numbers: " .. tostring(vim.o.relativenumber))
-end, {})
-
--- Delete all buffers
-vim.keymap.set("n", "<leader>bda", function()
-  vim.cmd('%bdelete!')
-  vim.notify("Deleted all buffers")
-end, {})
-
--- Delete all hidden buffers
-vim.keymap.set("n", "<leader>bdh", function()
-  local buffers = vim.api.nvim_list_bufs()
-
-  local visible_buffers = {}
-  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
-    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
-      local buf = vim.api.nvim_win_get_buf(win)
-      visible_buffers[buf] = true
-    end
-  end
-
-  for _, buf in ipairs(buffers) do
-    if not visible_buffers[buf]
-        and vim.api.nvim_buf_is_loaded(buf)
-        and not vim.api.nvim_get_option_value("modified", {}) then
-      vim.api.nvim_buf_delete(buf, { force = false })
-    end
-  end
-
-  vim.notify("Deleted hidden buffers")
-end, {})
-
--- Expand quickfix list into new tabs
-vim.keymap.set("n", "<leader>co", function()
-  if vim.bo.buftype ~= "quickfix" then return end
-
-  local qf_winid = vim.fn.win_getid()
-  local qf_list = vim.fn.getqflist()
-
-  for _, entry in ipairs(qf_list) do
-    if entry.valid == 1 and entry.bufnr > 0 then
-      local filepath = vim.fn.bufname(entry.bufnr)
-      if filepath and filepath ~= "" then
-        vim.cmd("tabnew " .. vim.fn.fnameescape(filepath))
+        return mini_statusline.combine_groups({
+          { hl = mode_hl,                 strings = { mode } },
+          { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics } },
+          "%<", -- Mark general truncate point
+          { hl = "MiniStatuslineFilename", strings = { filename } },
+          { hl = "MiniStatuslineDivide" },
+          "%=", -- End left alignment
+          { hl = "MiniStatuslineFiletype", strings = { "%{&filetype}", lsp } },
+          { hl = "MiniStatuslineSearch",   strings = { percent, search } },
+          { hl = mode_hl,                  strings = { location } },
+        })
       end
-    end
-  end
+    },
+  })
 
-  vim.fn.win_gotoid(qf_winid)
-  vim.cmd("close")
+  -- Treesitter
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = { "ruby" },
+    callback = function()
+      pcall(vim.treesitter.start)
+    end,
+  })
 
-  vim.notify("Expanded quickfix list into new tabs")
-end, {})
+  -- Open in explorer
+  vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+      if vim.fn.argc() == 0 then
+        vim.cmd("Explore")
+      end
+    end,
+  })
+end)
 
--- Auto resize splits
-vim.api.nvim_create_autocmd("VimResized", {
-  command = "wincmd =",
-})
+-- Plugins
+MiniDeps.later(function()
+  -- Session
+  require("session").setup({})
+
+  -- Mini
+  require("mini.extra").setup({})
+  require("mini.icons").setup({})
+  require("mini.splitjoin").setup({})
+  require("mini.pairs").setup({})
+  require("mini.surround").setup({})
+
+  -- Blink
+  require("blink.cmp").setup({
+    fuzzy = { implementation = "lua" },
+    signature = { enabled = true },
+    sources = { default = { 'lsp', 'path', 'buffer' } },
+    keymap = {
+      preset = "default",
+      ['<Tab>'] = { 'select_and_accept', 'fallback' },
+      ['<C-a>'] = { 'show', 'show_documentation', 'hide_documentation' },
+      ['<C-c>'] = { 'hide', 'fallback' },
+    },
+    completion = {
+      trigger = {
+        show_on_insert_on_trigger_character = false,
+        show_on_keyword = false,
+      }
+    }
+  })
+
+  -- Snacks
+  require("snacks").setup({
+    bigfile = { enabled = true },
+    input = { enabled = true },
+    indent = {
+      enabled = true,
+      animate = { enabled = false }
+    },
+    picker = {
+      enabled = true,
+      layout = {
+        preset = "default",
+      }
+    },
+  })
+
+  -- Mini diff
+  require("mini.diff").setup({
+    view = {
+      style = "sign",
+      signs = { add = "+", change = "~", delete = "-" },
+      priority = 9
+    }
+  })
+
+  -- Mini Notify
+  local notify = require("mini.notify")
+  notify.setup({
+    winblend = 100,
+    window = {
+      max_width_share = 0.5,
+      config = function()
+        return {
+          anchor = "SE",
+          row = vim.o.lines - 2,
+        }
+      end,
+    }
+  })
+  vim.notify = notify.make_notify({})
+
+  -- Auto resize splits
+  vim.api.nvim_create_autocmd("VimResized", {
+    command = "wincmd =",
+  })
+end)

@@ -1,2 +1,9 @@
-.booli_zshrc
 .DS_Store
+.zcompdump
+.zcompcache
+
+yazi/theme.toml
+term_icon*
+.booli_zshrc
+
+notes.md

@@ -1,84 +1,84 @@
-require('devcontainers').setup({})
+MiniDeps.now(function()
+  -- Copilot
+  vim.g.copilot_enabled = 0
+end)
 
--- Ruby
-vim.lsp.config('ruby_lsp', {
-  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.ruby_lsp.cmd),
-  init_options = {
-    addonSettings = {
-      ["Ruby LSP Rails"] = { enablePendingMigrationsPrompt = false, },
+MiniDeps.later(function()
+  -- Lsps
+  local capabilities = require('blink.cmp').get_lsp_capabilities()
+
+  vim.lsp.config('ts_ls', { capabilities = capabilities })
+  vim.lsp.config('eslint', { capabilities = capabilities })
+  vim.lsp.config('tailwindcss', { capabilities = capabilities })
+
+  vim.lsp.config('ruby_lsp', {
+    capabilities = capabilities,
+    init_options = {
+      addonSettings = {
+        ["Ruby LSP Rails"] = { enablePendingMigrationsPrompt = false }
+      }
     },
-  },
-})
+  })
 
--- Web
-vim.lsp.config('ts_ls', {
-  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.ts_ls.cmd),
-  -- cmd = { 'yarn', 'typescript-language-server', '--stdio' }
-})
-
-vim.lsp.config('eslint', {
-  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.eslint.cmd),
-  -- cmd = { 'yarn', 'vscode-eslint-language-server', '--stdio' }
-})
-
-vim.lsp.config('tailwindcss', {
-  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.tailwindcss.cmd),
-  -- cmd = { 'yarn', 'tailwindcss-language-server', '--stdio' }
-})
-
--- Lua --
-vim.lsp.config('lua_ls', {
-  -- cmd = require('devcontainers').lsp_cmd(vim.lsp.config.lua_ls.cmd),
-  settings = {
-    Lua = {
-      runtime = { version = 'LuaJIT' },
-      diagnostics = {
-        globals = { 'vim', 'require' },
+  vim.lsp.config('lua_ls', {
+    capabilities = capabilities,
+    settings = {
+      Lua = {
+        runtime = { version = 'LuaJIT' },
+        diagnostics = {
+          globals = { 'vim', 'require' },
+        },
+        workspace = {
+          library = vim.api.nvim_get_runtime_file("", true),
+          checkThirdParty = false,
+        },
+        telemetry = { enable = false },
       },
-      workspace = {
-        library = vim.api.nvim_get_runtime_file("", true),
-        checkThirdParty = false,
-      },
-      telemetry = { enable = false },
     },
-  },
-})
+  })
 
--- Copilot bindings --
-vim.g.copilot_enabled = 0
-vim.keymap.set('i', '<C-g>w', '<Plug>(copilot-accept-word)')
-vim.keymap.set('i', '<C-g>l', '<Plug>(copilot-accept-line)')
-vim.keymap.set('i', '<C-g>x', '<Plug>(copilot-dismiss)')
+  -- Diagnostic config
+  vim.diagnostic.config({
+    virtual_lines = false,
+    underline = true,
+    signs = { priority = 10 }
+  })
 
+  -- Lsp menu
+  local servers = {
+    { text = "Typescript LS", name = 'ts_ls',       enabled = vim.lsp.is_enabled('ts_ls') },
+    { text = "Eslint",        name = "eslint",      enabled = vim.lsp.is_enabled('eslint') },
+    { text = "Tailwind LS",   name = "tailwindcss", enabled = vim.lsp.is_enabled('tailwindcss') },
+    { text = "Ruby LSP",      name = 'ruby_lsp',    enabled = vim.lsp.is_enabled('ruby_lsp') },
+    { text = "Lua LS",        name = "lua_ls",      enabled = vim.lsp.is_enabled('lua_ls') },
+    { text = "Copilot",       name = 'copilot',     enabled = vim.g.copilot_enabled == 1, }
+  }
 
--- LSP menu --
-Menu.create({
-  name = "LspToggle",
-  title = "Toggle LSP servers",
-  togglable = true,
-  auto_close = false,
-  items = {
-    { label = "Typescript ls", name = 'ts_ls' },
-    { label = "Eslint",        name = 'eslint' },
-    { label = "Tailwind ls",   name = 'tailwindcss' },
-    { label = "Ruby lsp",      name = 'ruby_lsp' },
-    { label = "Lua ls",        name = 'lua_ls' },
-    {
-      label = 'Copilot',
-      name = 'copilot',
-      callback = function(item)
-        if item.enable then
-          vim.g.copilot_enabled = 1
-          vim.notify("Copilot: enabled")
+  function Lsp_toggle_menu()
+    Snacks.picker.pick({
+      source = "LSP",
+      items = servers,
+      layout = { preset = "select" },
+      format = function(item)
+        local state_display = item.enabled and "● " or "○ "
+        return { { state_display .. item.text } }
+      end,
+      confirm = function(picker, item)
+        local new_state = not item.enabled
+
+        if item.name == "copilot" then
+          vim.g.copilot_enabled = new_state and 1 or 0
         else
-          vim.g.copilot_enabled = 0
-          vim.notify("Copilot: disabled")
+          vim.lsp.enable(item.name, new_state)
         end
-      end
-    },
-  },
-  callback = function(item)
-    vim.lsp.enable(item.name, item.enable)
-    vim.notify(item.name .. ": " .. tostring(item.enable))
+
+        item.enabled = new_state
+        picker.list:update({ force = true })
+      end,
+    })
   end
-})
+
+  -- User commands for lsps
+  vim.api.nvim_create_user_command("LspToggle", Lsp_toggle_menu, { desc = "LSP Toggle" })
+  vim.api.nvim_create_user_command("LspLog", function() vim.cmd("tabnew " .. vim.lsp.log.get_filename()) end, {})
+end)

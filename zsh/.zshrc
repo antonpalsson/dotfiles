@@ -1,39 +1,52 @@
-# Paths
-typeset -U path
-path=(
-  /Users/polle/.local/share/mise/shims
-  /opt/homebrew/bin
-  /usr/bin
-  /usr/sbin
-  /bin
-  /sbin
-)
-
 # Prompt
 PROMPT='%B%F{green}%n@%m%f%b %f%F{blue}%~%f %# '
 
-# CLI apps
-eval "$(mise activate --shims)" # Mise
-eval "$(zoxide init zsh)" # Zoxide
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt INC_APPEND_HISTORY
+setopt AUTO_CD
+
+# Completion
+autoload -Uz compinit
+compinit
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+
+# Tools
+eval "$(zoxide init zsh)"
+eval "$(mise activate zsh)"
 
 # Env vars
-export DOTS="/Users/polle/Github/antonpalsson/dotfiles"
-export RIPGREP_CONFIG_PATH="$DOTS/.ripgreprc"
+export DOTS="$HOME/dev/personal/dotfiles"
+export RIPGREP_CONFIG_PATH="$DOTS/other/.ripgreprc"
 export EDITOR="nvim"
+export VISUAL="nvim"
+export HOMEBREW_NO_ENV_HINTS=1
 
 # Aliases
+alias q="exit"
+alias sa="source $HOME/.config/zsh/.zshrc"
+alias cl="clear"
 alias ".."="cd .."
 alias "..."="cd ../.."
 alias "...."="cd ../../.."
-alias ll="ls -la"
-alias sa="source ~/.zshrc"
+alias ls="eza --group-directories-first"
+alias ll="eza -la --group-directories-first"
+alias t2="eza --tree --level=2"
+alias t3="eza --tree --level=3"
+alias t4="eza --tree --level=4"
+alias tf="eza --tree"
 
-alias icat="kitten icat"
-alias k="kubectl"
-alias lazygit="lazygit"
-alias lazydocker="lazydocker"
-
+alias v="nvim"
 alias vim="nvim"
+alias k="kubectl"
+alias lgit="lazygit"
+alias ldocker="lazydocker"
 
 alias ta="tmux attach"
 alias tl="tmux list-sessions"
@@ -70,6 +83,17 @@ alias gpf="git push --force-with-lease"
 function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | head -1 | xargs git checkout } # Checkout master/main
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|wip\|tmp\|temp\|\*" | xargs git branch -D } # Cleanup branches
+
+function y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+
+  rm -f -- "$tmp"
+}
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then
