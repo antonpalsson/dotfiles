@@ -10,6 +10,15 @@ MiniDeps.later(function()
   vim.lsp.config('ts_ls', { capabilities = capabilities })
   vim.lsp.config('eslint', { capabilities = capabilities })
   vim.lsp.config('tailwindcss', { capabilities = capabilities })
+  vim.lsp.config('biome', { capabilities = capabilities })
+
+  vim.lsp.config('ltex', {
+    settings = {
+      ltex = {
+        language = "en-GB",
+      },
+    },
+  })
 
   vim.lsp.config('ruby_lsp', {
     capabilities = capabilities,
@@ -48,10 +57,12 @@ MiniDeps.later(function()
   local servers = {
     { text = "Typescript LS", name = 'ts_ls',       enabled = vim.lsp.is_enabled('ts_ls') },
     { text = "Eslint",        name = "eslint",      enabled = vim.lsp.is_enabled('eslint') },
+    { text = "Biome",         name = "biome",       enabled = vim.lsp.is_enabled('biome') },
     { text = "Tailwind LS",   name = "tailwindcss", enabled = vim.lsp.is_enabled('tailwindcss') },
     { text = "Ruby LSP",      name = 'ruby_lsp',    enabled = vim.lsp.is_enabled('ruby_lsp') },
     { text = "Lua LS",        name = "lua_ls",      enabled = vim.lsp.is_enabled('lua_ls') },
-    { text = "Copilot",       name = 'copilot',     enabled = vim.g.copilot_enabled == 1, }
+    { text = "Copilot",       name = 'copilot',     enabled = vim.g.copilot_enabled == 1 },
+    { text = "Ltex",          name = 'ltex',        enabled = vim.lsp.is_enabled('ltex') }
   }
 
   function Lsp_toggle_menu()
@@ -81,4 +92,5 @@ MiniDeps.later(function()
   -- User commands for lsps
   vim.api.nvim_create_user_command("LspToggle", Lsp_toggle_menu, { desc = "LSP Toggle" })
   vim.api.nvim_create_user_command("LspLog", function() vim.cmd("tabnew " .. vim.lsp.log.get_filename()) end, {})
+  vim.api.nvim_create_user_command("LspInfo", function() vim.cmd("checkhealth vim.lsp") end, {})
 end)

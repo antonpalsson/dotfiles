@@ -29,18 +29,18 @@ export VISUAL="nvim"
 export HOMEBREW_NO_ENV_HINTS=1
 
 # Aliases
-alias q="exit"
 alias sa="source $HOME/.config/zsh/.zshrc"
+alias q="exit"
 alias cl="clear"
 alias ".."="cd .."
 alias "..."="cd ../.."
 alias "...."="cd ../../.."
 alias ls="eza --group-directories-first"
 alias ll="eza -la --group-directories-first"
-alias t2="eza --tree --level=2"
-alias t3="eza --tree --level=3"
-alias t4="eza --tree --level=4"
-alias tf="eza --tree"
+alias t2="eza -a --tree --level=2"
+alias t3="eza -a --tree --level=3"
+alias t4="eza -a --tree --level=4"
+alias tf="eza -a --tree"
 
 alias v="nvim"
 alias vim="nvim"
@@ -51,6 +51,7 @@ alias ldocker="lazydocker"
 alias ta="tmux attach"
 alias tl="tmux list-sessions"
 function ts() { tmux new -s "$*" }
+function tc() { [[ -n "$TMUX" ]] && tmux capture-pane -pS - | nvim +$ - }
 
 alias dc="docker compose"
 alias dce="docker compose exec"

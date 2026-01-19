@@ -17,12 +17,8 @@ MiniDeps.later(function()
   vim.keymap.set("i", "<C-f>", "<Right>")                  -- Mini jumps
   vim.keymap.set("i", "<C-b>", "<Left>")
 
-  -- Yazi
-  local yazi = require("yazi")
-  vim.keymap.set("n", "<leader>e", function() yazi.yazi() end, {})
-
   -- Picker bindings
-  vim.keymap.set("n", "<leader>fe", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
+  vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
   vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files() end, { desc = "Find Files" })
   vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep() end, { desc = "Grep (Live)" })
   vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff() end, { desc = "Git Hunks" })
@@ -111,6 +107,11 @@ MiniDeps.later(function()
   vim.keymap.set("n", "<leader>tr", function()
     vim.o.relativenumber = not vim.o.relativenumber
     vim.notify("Relative numbers: " .. tostring(vim.o.relativenumber))
+  end, {})
+
+  -- No highlight
+  vim.keymap.set("n", "<leader>noh", function()
+    vim.cmd("noh")
   end, {})
 
   -- Delete all buffers

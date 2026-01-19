@@ -4,7 +4,7 @@ foreground = ffffff
 title = " "
 macos-titlebar-proxy-icon = hidden
 
-font-family = JetBrains Mono
+# font-family = SF Mono
 font-size = 13
 font-style-bold = true
 font-thicken = true

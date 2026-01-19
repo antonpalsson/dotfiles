@@ -5,6 +5,7 @@ vim.g.netrw_banner = 0
 
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.termguicolors = true
+vim.opt.shortmess:append("I")
 
 vim.o.mouse = "a"
 vim.o.mousescroll = "ver:2,hor:0"
@@ -92,20 +93,50 @@ MiniDeps.now(function()
     },
   })
 
-  -- Treesitter
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = { "ruby" },
-    callback = function()
-      pcall(vim.treesitter.start)
-    end,
+  -- Markdown
+  require('render-markdown').setup({
+    heading = {
+      sign = false,
+      position = 'inline',
+      backgrounds = {},
+    },
   })
 
-  -- Open in explorer
-  vim.api.nvim_create_autocmd("VimEnter", {
+  -- Snacks
+  require("snacks").setup({
+    bigfile = { enabled = true },
+    input = { enabled = true },
+    indent = {
+      enabled = true,
+      animate = { enabled = false }
+    },
+    picker = {
+      enabled = true,
+      sources = {
+        files = { hidden = true },
+        grep = { hidden = true },
+        explorer = { hidden = true },
+      },
+      explorer = {
+        trash = true,
+      }
+    },
+    image = {
+      enabled = true,
+      doc = {
+        inline = false,
+      }
+    },
+  })
+
+  -- Treesitter
+  local ensure_installed = { "lua", "ruby", "markdown" }
+  require("nvim-treesitter").install(ensure_installed)
+
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = ensure_installed,
     callback = function()
-      if vim.fn.argc() == 0 then
-        vim.cmd("Explore")
-      end
+      pcall(vim.treesitter.start)
     end,
   })
 end)
@@ -141,22 +172,6 @@ MiniDeps.later(function()
     }
   })
 
-  -- Snacks
-  require("snacks").setup({
-    bigfile = { enabled = true },
-    input = { enabled = true },
-    indent = {
-      enabled = true,
-      animate = { enabled = false }
-    },
-    picker = {
-      enabled = true,
-      layout = {
-        preset = "default",
-      }
-    },
-  })
-
   -- Mini diff
   require("mini.diff").setup({
     view = {
@@ -165,22 +180,6 @@ MiniDeps.later(function()
       priority = 9
     }
   })
-
-  -- Mini Notify
-  local notify = require("mini.notify")
-  notify.setup({
-    winblend = 100,
-    window = {
-      max_width_share = 0.5,
-      config = function()
-        return {
-          anchor = "SE",
-          row = vim.o.lines - 2,
-        }
-      end,
-    }
-  })
-  vim.notify = notify.make_notify({})
 
   -- Auto resize splits
   vim.api.nvim_create_autocmd("VimResized", {
