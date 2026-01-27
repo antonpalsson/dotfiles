@@ -17,6 +17,19 @@ compinit
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
+# History search
+function hfzf() {
+  local selected
+  selected=$(fc -rl 1 | fzf)
+  if [[ -n "$selected" ]]; then
+    LBUFFER=$(echo "$selected" | sed 's/^ *[0-9]* *//')
+  fi
+  zle reset-prompt
+}
+
+zle -N hfzf
+bindkey '^R' hfzf
+
 # Tools
 eval "$(zoxide init zsh)"
 eval "$(mise activate zsh)"
@@ -41,7 +54,6 @@ alias t2="eza -a --tree --level=2"
 alias t3="eza -a --tree --level=3"
 alias t4="eza -a --tree --level=4"
 alias tf="eza -a --tree"
-
 alias v="nvim"
 alias vim="nvim"
 alias k="kubectl"
@@ -98,5 +110,5 @@ function y() {
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then
-    source ~/.booli_zshrc
+  source ~/.booli_zshrc
 fi

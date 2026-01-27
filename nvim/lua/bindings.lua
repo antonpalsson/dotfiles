@@ -18,13 +18,14 @@ MiniDeps.later(function()
   vim.keymap.set("i", "<C-b>", "<Left>")
 
   -- Picker bindings
-  vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
-  vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files() end, { desc = "Find Files" })
-  vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep() end, { desc = "Grep (Live)" })
-  vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff() end, { desc = "Git Hunks" })
+  local picker_opts = { layout = { preset = "ivy_split", layout = { height = 0.25 } } }
+  vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts) end, { desc = "Find Files" })
+  vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts) end, { desc = "Grep (Live)" })
+  vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts) end, { desc = "Git Hunks" })
   vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log() end, { desc = "Git Commits" })
   vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics" })
   vim.keymap.set("n", "<leader>f:", function() Snacks.picker.commands() end, { desc = "Commands" })
+  vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
 
   -- Lsp bindings
   vim.keymap.set("n", "grr", function() Snacks.picker.lsp_references() end, { desc = "LSP References" })
@@ -37,9 +38,10 @@ MiniDeps.later(function()
   vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer() end, { desc = "Diagnostics (All)" })
   vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, { desc = "LSP Format" })
   vim.keymap.set("n", "gd", function() Snacks.picker.lsp_definitions() end, { desc = "LSP Definition" })
-  vim.keymap.set("n", "tgd",
-    function() Snacks.picker.lsp_definitions({ jump = { reuse_win = false, cmd = "tab split" } }) end,
-    { desc = "LSP Definition in new tab" })
+  vim.keymap.set("n", "gD", function()
+    vim.cmd('tab split')
+    Snacks.picker.lsp_definitions()
+  end, { desc = "LSP Definition in new tab" })
 
   -- Diagnostic bindings
   vim.keymap.set("n", "]d", function()

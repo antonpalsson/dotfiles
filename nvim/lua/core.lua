@@ -31,6 +31,8 @@ vim.o.confirm = true
 MiniDeps.now(function()
   -- Tabline
   require("tabline").setup({})
+  -- Session
+  require("session").setup({})
 
   -- Theme
   require("vague").setup({
@@ -100,22 +102,44 @@ MiniDeps.now(function()
       position = 'inline',
       backgrounds = {},
     },
+    sign = {
+      enabled = false,
+    },
+    code = {
+      disable_background = true,
+      border = 'thin',
+      language_border = '-',
+      below = '-',
+    },
   })
 
   -- Snacks
   require("snacks").setup({
-    bigfile = { enabled = true },
-    input = { enabled = true },
+    bigfile = {
+      enabled = true,
+    },
+    input = {
+      enabled = true,
+    },
     indent = {
       enabled = true,
-      animate = { enabled = false }
+      animate = {
+        enabled = false
+      }
     },
     picker = {
       enabled = true,
       sources = {
-        files = { hidden = true },
-        grep = { hidden = true },
-        explorer = { hidden = true },
+        files = {
+          hidden = true,
+        },
+        grep = {
+          hidden = true,
+        },
+        explorer = {
+          hidden = true,
+          ignored = true,
+        },
       },
       explorer = {
         trash = true,
@@ -127,10 +151,19 @@ MiniDeps.now(function()
         inline = false,
       }
     },
+    notifier = {
+      enabled = true,
+      top_down = false,
+      margin = {
+        top = 0,
+        right = 0,
+        bottom = 1
+      },
+    }
   })
 
   -- Treesitter
-  local ensure_installed = { "lua", "ruby", "markdown" }
+  local ensure_installed = { "lua", "ruby", "markdown", "regex" }
   require("nvim-treesitter").install(ensure_installed)
 
   vim.api.nvim_create_autocmd("FileType", {
@@ -139,12 +172,6 @@ MiniDeps.now(function()
       pcall(vim.treesitter.start)
     end,
   })
-end)
-
--- Plugins
-MiniDeps.later(function()
-  -- Session
-  require("session").setup({})
 
   -- Mini
   require("mini.extra").setup({})
@@ -157,7 +184,7 @@ MiniDeps.later(function()
   require("blink.cmp").setup({
     fuzzy = { implementation = "lua" },
     signature = { enabled = true },
-    sources = { default = { 'lsp', 'path', 'buffer' } },
+    sources = { default = { 'lsp', 'path', 'buffer', 'cmdline' } },
     keymap = {
       preset = "default",
       ['<Tab>'] = { 'select_and_accept', 'fallback' },
@@ -166,8 +193,18 @@ MiniDeps.later(function()
     },
     completion = {
       trigger = {
-        show_on_insert_on_trigger_character = false,
+        -- Disable all triggers (using C-a to trigger instead)
+        prefetch_on_insert = false,
+        show_in_snippet = false,
+        show_on_backspace = false,
+        show_on_backspace_in_keyword = false,
+        show_on_backspace_after_accept = false,
+        show_on_backspace_after_insert_enter = false,
         show_on_keyword = false,
+        show_on_trigger_character = false,
+        show_on_insert = false,
+        show_on_accept_on_trigger_character = false,
+        show_on_insert_on_trigger_character = false,
       }
     }
   })
@@ -179,10 +216,5 @@ MiniDeps.later(function()
       signs = { add = "+", change = "~", delete = "-" },
       priority = 9
     }
-  })
-
-  -- Auto resize splits
-  vim.api.nvim_create_autocmd("VimResized", {
-    command = "wincmd =",
   })
 end)
