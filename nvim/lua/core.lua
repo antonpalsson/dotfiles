@@ -31,6 +31,8 @@ vim.o.confirm = true
 MiniDeps.now(function()
   -- Tabline
   require("tabline").setup({})
+  -- Session
+  require("session").setup({})
 
   -- Theme
   require("vague").setup({
@@ -127,6 +129,11 @@ MiniDeps.now(function()
         inline = false,
       }
     },
+    notifier = {
+      enabled = true,
+      top_down = false,
+      margin = { top = 0, right = 0, bottom = 1 },
+    }
   })
 
   -- Treesitter
@@ -139,12 +146,6 @@ MiniDeps.now(function()
       pcall(vim.treesitter.start)
     end,
   })
-end)
-
--- Plugins
-MiniDeps.later(function()
-  -- Session
-  require("session").setup({})
 
   -- Mini
   require("mini.extra").setup({})
@@ -166,8 +167,18 @@ MiniDeps.later(function()
     },
     completion = {
       trigger = {
-        show_on_insert_on_trigger_character = false,
+        -- Disable all triggers (using C-a to trigger instead)
+        prefetch_on_insert = false,
+        show_in_snippet = false,
+        show_on_backspace = false,
+        show_on_backspace_in_keyword = false,
+        show_on_backspace_after_accept = false,
+        show_on_backspace_after_insert_enter = false,
         show_on_keyword = false,
+        show_on_trigger_character = false,
+        show_on_insert = false,
+        show_on_accept_on_trigger_character = false,
+        show_on_insert_on_trigger_character = false,
       }
     }
   })
@@ -180,9 +191,40 @@ MiniDeps.later(function()
       priority = 9
     }
   })
+end)
 
+-- Auto cmds
+MiniDeps.later(function()
   -- Auto resize splits
   vim.api.nvim_create_autocmd("VimResized", {
     command = "wincmd =",
+  })
+
+  -- Notify on macro recording
+  vim.api.nvim_create_autocmd("RecordingEnter", {
+    callback = function()
+      vim.notify("Recording macro to register: " .. vim.fn.reg_recording(), vim.log.levels.WARN)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("RecordingLeave", {
+    callback = function()
+      vim.notify("Macro recording stopped", vim.log.levels.info)
+    end,
+  })
+
+  -- Notifier for LSP progress
+  vim.api.nvim_create_autocmd("LspProgress", {
+    callback = function(ev)
+      local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+      vim.notify(vim.lsp.status(), "info", {
+        id = "lsp_progress",
+        title = "LSP Progress",
+        opts = function(notif)
+          notif.icon = ev.data.params.value.kind == "end" and " "
+              or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+        end,
+      })
+    end,
   })
 end)

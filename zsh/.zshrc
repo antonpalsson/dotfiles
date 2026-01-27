@@ -98,5 +98,5 @@ function y() {
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then
-    source ~/.booli_zshrc
+  source ~/.booli_zshrc
 fi
