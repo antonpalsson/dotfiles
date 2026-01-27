@@ -37,9 +37,10 @@ MiniDeps.later(function()
   vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer() end, { desc = "Diagnostics (All)" })
   vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, { desc = "LSP Format" })
   vim.keymap.set("n", "gd", function() Snacks.picker.lsp_definitions() end, { desc = "LSP Definition" })
-  vim.keymap.set("n", "tgd",
-    function() Snacks.picker.lsp_definitions({ jump = { reuse_win = false, cmd = "tab split" } }) end,
-    { desc = "LSP Definition in new tab" })
+  vim.keymap.set("n", "gD", function()
+    vim.cmd('tab split')
+    Snacks.picker.lsp_definitions()
+  end, { desc = "LSP Definition in new tab" })
 
   -- Diagnostic bindings
   vim.keymap.set("n", "]d", function()

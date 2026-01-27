@@ -7,23 +7,21 @@ if not vim.loop.fs_stat(mini_path) then
 end
 
 require('mini.deps').setup({ path = { package = path_package } })
-local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
+local add, now = MiniDeps.add, MiniDeps.now
 
 now(function()
   add({ source = "vague2k/vague.nvim" })
   add({ source = "echasnovski/mini.nvim" })
   add({ source = "folke/snacks.nvim" })
-  add({ source = "github/copilot.vim" })
-  add({ source = "nvim-treesitter/nvim-treesitter"})
-  add({ source = "MeanderingProgrammer/render-markdown.nvim"})
-end)
-
-later(function()
-  add({ source = 'neovim/nvim-lspconfig' })
   add({ source = "Saghen/blink.cmp" })
+  add({ source = 'neovim/nvim-lspconfig' })
+  -- add({ source = "github/copilot.vim" })
+  add({ source = "nvim-treesitter/nvim-treesitter" })
+  add({ source = "MeanderingProgrammer/render-markdown.nvim" })
   add({ source = "sindrets/diffview.nvim" })
 end)
 
 require("core")
-require("lsp")
 require("bindings")
+require("commands")
+require("lsp")

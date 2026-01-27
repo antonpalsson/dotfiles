@@ -1,16 +1,57 @@
-MiniDeps.now(function()
-  -- Copilot
-  vim.g.copilot_enabled = 0
-end)
+-- MiniDeps.now(function()
+--   -- Copilot
+--   vim.g.copilot_enabled = 0
+-- end)
 
 MiniDeps.later(function()
   -- Lsps
   local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-  vim.lsp.config('ts_ls', { capabilities = capabilities })
-  vim.lsp.config('eslint', { capabilities = capabilities })
+  vim.lsp.config('ts_ls', {
+    capabilities = capabilities,
+    init_options = {
+      tsserver = {
+        path = vim.fn.getcwd() .. '/node_modules/typescript/lib'
+      }
+    },
+    filetypes = {
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact"
+    },
+  })
+  vim.lsp.config('eslint', {
+    capabilities = capabilities,
+    filetypes = {
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "vue",
+      "svelte",
+      "astro",
+      "htmlangular"
+    }
+  })
   vim.lsp.config('tailwindcss', { capabilities = capabilities })
-  vim.lsp.config('biome', { capabilities = capabilities })
+  vim.lsp.config('biome', {
+    capabilities = capabilities,
+    filetypes = {
+      "astro",
+      "css",
+      "graphql",
+      "html",
+      "javascript",
+      "javascriptreact",
+      "json",
+      "jsonc",
+      "svelte",
+      "typescript",
+      "typescriptreact",
+      "vue"
+    }
+  })
 
   vim.lsp.config('ltex', {
     settings = {
@@ -61,7 +102,7 @@ MiniDeps.later(function()
     { text = "Tailwind LS",   name = "tailwindcss", enabled = vim.lsp.is_enabled('tailwindcss') },
     { text = "Ruby LSP",      name = 'ruby_lsp',    enabled = vim.lsp.is_enabled('ruby_lsp') },
     { text = "Lua LS",        name = "lua_ls",      enabled = vim.lsp.is_enabled('lua_ls') },
-    { text = "Copilot",       name = 'copilot',     enabled = vim.g.copilot_enabled == 1 },
+    -- { text = "Copilot",       name = 'copilot',     enabled = vim.g.copilot_enabled == 1 },
     { text = "Ltex",          name = 'ltex',        enabled = vim.lsp.is_enabled('ltex') }
   }
 
@@ -77,11 +118,13 @@ MiniDeps.later(function()
       confirm = function(picker, item)
         local new_state = not item.enabled
 
-        if item.name == "copilot" then
-          vim.g.copilot_enabled = new_state and 1 or 0
-        else
-          vim.lsp.enable(item.name, new_state)
-        end
+        -- if item.name == "copilot" then
+        --   vim.g.copilot_enabled = new_state and 1 or 0
+        -- else
+        --   vim.lsp.enable(item.name, new_state)
+        -- end
+
+        vim.lsp.enable(item.name, new_state)
 
         item.enabled = new_state
         picker.list:update({ force = true })
