@@ -1,55 +1,39 @@
-#!/bin/zsh
+#!/bin/sh
 
 set -e
 
-DOTFILES_DIR="${0:A:h}"
+DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROFILE=""
 
-AUTO_YES=false
-for arg in "$@"; do
-  case "$arg" in
-    -y|--yes)
-      AUTO_YES=true
-      ;;
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --profile=*) PROFILE="${1#--profile=}" ;;
+    --profile) shift; PROFILE="$1" ;;
   esac
+  shift
 done
 
-typeset -A FILES
-FILES=(
-  ".zshenv"            "$HOME/.zshenv"
-  "zsh"                "$HOME/.config/zsh"
-  "nvim"               "$HOME/.config/nvim"
-  "tmux"               "$HOME/.config/tmux"
-  "ghostty"            "$HOME/.config/ghostty"
-  "yazi"               "$HOME/.config/yazi"
-)
+if [ -z "$PROFILE" ]; then
+  echo "Error: --profile is required. Available profiles: mac, raspi"
+  exit 1
+fi
 
-echo "Starting symlink process..."
+echo "Profile: $PROFILE"
+mkdir -p "$HOME/.config"
 
-for FILE in ${(k)FILES}; do
-  SOURCE="$DOTFILES_DIR/$FILE"
-  TARGET="${FILES[$FILE]}"
+case "$PROFILE" in
+  raspi)
+    stow --target "$HOME/.config" --dir "$DOTFILES_DIR" --restow --ignore='ghostty' --ignore='tmux' --ignore='zsh' config
+    stow --target "$HOME" --dir "$DOTFILES_DIR" --restow --ignore='\.zshenv' home
+    ;;
+  mac)
+    stow --target "$HOME/.config" --dir "$DOTFILES_DIR" --restow config
+    stow --target "$HOME" --dir "$DOTFILES_DIR" --restow --ignore='\.bashrc' home
+    ;;
+  *)
+    echo "Error: Unknown profile '$PROFILE'. Available profiles: mac, raspi"
+    exit 1
+    ;;
+esac
 
-  mkdir -p "$(dirname "$TARGET")"
-
-  if [[ -e "$TARGET" || -L "$TARGET" ]]; then
-    if $AUTO_YES; then
-      rm -rf "$TARGET"
-      echo "Removed existing $TARGET"
-    else
-      echo -n "$TARGET already exists. Remove it? (y/N): "
-      read -k 1 confirm
-      echo ""
-
-      if [[ $confirm == [yY] ]]; then
-        rm -rf "$TARGET"
-        echo "Removed existing $TARGET"
-      else
-        echo "Skipping $TARGET"
-        continue
-      fi
-    fi
-  fi
-
-  ln -s "$SOURCE" "$TARGET"
-  echo "Linked $TARGET -> $SOURCE"
-done
+echo "Done."

@@ -1,10 +1,11 @@
 .DS_Store
+
 .zcompdump
 .zcompcache
 .zsh_sessions
 
-yazi/theme.toml
 term_icon*
-.booli_zshrc
+home/.booli_zshrc
 
 notes.md
+CLAUDE.md

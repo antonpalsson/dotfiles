@@ -1,4 +1,4 @@
-MiniDeps.later(function()
+if not vim.env.MINIMAL_NVIM then
   -- Auto resize splits
   vim.api.nvim_create_autocmd("VimResized", {
     command = "wincmd =",
@@ -13,7 +13,7 @@ MiniDeps.later(function()
 
   vim.api.nvim_create_autocmd("RecordingLeave", {
     callback = function()
-      vim.notify("Macro recording stopped", vim.log.levels.info)
+      vim.notify("Macro recording stopped", vim.log.levels.INFO)
     end,
   })
 
@@ -25,10 +25,10 @@ MiniDeps.later(function()
         id = "lsp_progress",
         title = "LSP Progress",
         opts = function(notif)
-          notif.icon = ev.data.params.value.kind == "end" and " "
-              or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+          notif.icon = ev.data.params.value.kind == "end" and " "
+          or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
         end,
       })
     end,
   })
-end)
+end

@@ -27,13 +27,13 @@ vim.o.scrolloff = 10
 vim.o.inccommand = "split"
 vim.o.confirm = true
 
--- Initial plugins
-MiniDeps.now(function()
-  -- Tabline
-  require("tabline").setup({})
-  -- Session
-  require("session").setup({})
+require("tabline").setup({})
+require("session").setup({ auto_load = true })
 
+if vim.env.MINIMAL_NVIM then
+  -- Fix tabline for minimal
+  vim.api.nvim_set_hl(0, "TabLineSel", { bold = true, reverse = true })
+else
   -- Theme
   require("vague").setup({
     transparent = true,
@@ -54,16 +54,16 @@ MiniDeps.now(function()
     fg = theme_fg,
   }
 
-  vim.api.nvim_set_hl(0, "TabLineFill", { fg = colors.fg, bg = colors.black })
-  vim.api.nvim_set_hl(0, "TabLineSel", { fg = colors.white, bg = colors.gray4 })
-  vim.api.nvim_set_hl(0, "TabLine", { fg = colors.gray4, bg = colors.black })
-  vim.api.nvim_set_hl(0, "MiniStatuslineDevinfo", { fg = colors.fg, bg = colors.gray3 })
-  vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { fg = colors.fg, bg = colors.gray2 })
-  vim.api.nvim_set_hl(0, "MiniStatuslineDivide", { fg = colors.fg, bg = colors.black })
-  vim.api.nvim_set_hl(0, "MiniStatuslineFiletype", { fg = colors.fg, bg = colors.gray2 })
-  vim.api.nvim_set_hl(0, "MiniStatuslineSearch", { fg = colors.fg, bg = colors.gray3 })
-  vim.api.nvim_set_hl(0, "SnacksIndent", { fg = colors.gray1 })
-  vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = colors.gray1 })
+  vim.api.nvim_set_hl(0, "TabLineFill",          { fg = colors.fg,    bg = colors.black })
+  vim.api.nvim_set_hl(0, "TabLineSel",           { fg = colors.white, bg = colors.gray4 })
+  vim.api.nvim_set_hl(0, "TabLine",              { fg = colors.gray4, bg = colors.black })
+  vim.api.nvim_set_hl(0, "MiniStatuslineDevinfo",  { fg = colors.fg,  bg = colors.gray3 })
+  vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { fg = colors.fg,  bg = colors.gray2 })
+  vim.api.nvim_set_hl(0, "MiniStatuslineDivide",   { fg = colors.fg,  bg = colors.black })
+  vim.api.nvim_set_hl(0, "MiniStatuslineFiletype", { fg = colors.fg,  bg = colors.gray2 })
+  vim.api.nvim_set_hl(0, "MiniStatuslineSearch",   { fg = colors.fg,  bg = colors.gray3 })
+  vim.api.nvim_set_hl(0, "SnacksIndent",         { fg = colors.gray1 })
+  vim.api.nvim_set_hl(0, "SnacksIndentScope",    { fg = colors.gray1 })
 
   -- Statusline
   local mini_statusline = require("mini.statusline")
@@ -81,8 +81,8 @@ MiniDeps.now(function()
         local location      = "%3l:%-2c"
 
         return mini_statusline.combine_groups({
-          { hl = mode_hl,                 strings = { mode } },
-          { hl = "MiniStatuslineDevinfo", strings = { git, diff, diagnostics } },
+          { hl = mode_hl,                  strings = { mode } },
+          { hl = "MiniStatuslineDevinfo",  strings = { git, diff, diagnostics } },
           "%<", -- Mark general truncate point
           { hl = "MiniStatuslineFilename", strings = { filename } },
           { hl = "MiniStatuslineDivide" },
@@ -115,76 +115,55 @@ MiniDeps.now(function()
 
   -- Snacks
   require("snacks").setup({
-    bigfile = {
+    bigfile = { enabled = true },
+    input   = { enabled = true },
+    indent  = { enabled = true, animate = { enabled = false } },
+    image   = { enabled = true, doc = { inline = false } },
+    notifier = {
       enabled = true,
-    },
-    input = {
-      enabled = true,
-    },
-    indent = {
-      enabled = true,
-      animate = {
-        enabled = false
-      }
+      top_down = false,
+      margin = { top = 0, right = 0, bottom = 1 },
     },
     picker = {
       enabled = true,
       sources = {
-        files = {
-          hidden = true,
-        },
-        grep = {
-          hidden = true,
-        },
-        explorer = {
-          hidden = true,
-          ignored = true,
-        },
+        files    = { hidden = true },
+        grep     = { hidden = true },
+        explorer = { hidden = true, ignored = true },
       },
-      explorer = {
-        trash = true,
-      }
+      explorer = { trash = true },
     },
-    image = {
-      enabled = true,
-      doc = {
-        inline = false,
-      }
-    },
-    notifier = {
-      enabled = true,
-      top_down = false,
-      margin = {
-        top = 0,
-        right = 0,
-        bottom = 1
-      },
-    }
   })
 
   -- Treesitter
-  local ensure_installed = { "lua", "ruby", "markdown", "regex" }
-  require("nvim-treesitter").install(ensure_installed)
+  local ts_langs = { "lua", "ruby", "markdown", "regex" }
+  require("nvim-treesitter").install(ts_langs)
 
   vim.api.nvim_create_autocmd("FileType", {
-    pattern = ensure_installed,
-    callback = function()
-      pcall(vim.treesitter.start)
-    end,
+    pattern = ts_langs,
+    callback = function() pcall(vim.treesitter.start) end,
   })
 
-  -- Mini
+  -- Mini modules
   require("mini.extra").setup({})
   require("mini.icons").setup({})
   require("mini.splitjoin").setup({})
   require("mini.pairs").setup({})
   require("mini.surround").setup({})
+  require("mini.diff").setup({
+    view = {
+      style = "sign",
+      signs = { add = "+", change = "~", delete = "-" },
+      priority = 9
+    }
+  })
 
-  -- Blink
+  -- Completion
   require("blink.cmp").setup({
     fuzzy = { implementation = "lua" },
     signature = { enabled = true },
-    sources = { default = { 'lsp', 'path', 'buffer', 'cmdline' } },
+    sources = { default = { 'lsp', 'path', 'buffer' } },
+    cmdline = { enabled = false },
     keymap = {
       preset = "default",
       ['<Tab>'] = { 'select_and_accept', 'fallback' },
@@ -193,7 +172,7 @@ MiniDeps.now(function()
     },
     completion = {
       trigger = {
-        -- Disable all triggers (using C-a to trigger instead)
+        -- Disable all auto-triggers; use C-a to trigger manually
         prefetch_on_insert = false,
         show_in_snippet = false,
         show_on_backspace = false,
@@ -208,13 +187,4 @@ MiniDeps.now(function()
       }
     }
   })
-
-  -- Mini diff
-  require("mini.diff").setup({
-    view = {
-      style = "sign",
-      signs = { add = "+", change = "~", delete = "-" },
-      priority = 9
-    }
-  })
-end)
+end

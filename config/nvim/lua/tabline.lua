@@ -1,37 +1,30 @@
 local Tabline = {}
 local H = {}
 
-Tabline.config = {
+local default_config = {
   show_modified = true,
   modified_indicator = '[+] ',
   show_navigation = true,
   navigation_left = '< ',
   navigation_right = ' >',
   special_files = {
-    'index', 'page', 'layout', 'init', 'style', 'styles', 'component', 'main'
+    'index', 'init', '__init__', 'main', 'app', 'config', 'types', 'utils',
+    'routes', 'settings', 'page', 'layout', 'component', 'style', 'styles',
+    'store', 'actions', 'views', 'models', 'hooks', 'middleware', 'context',
+    'helpers', 'constants', 'api', 'lib', 'application', 'schema', 'urls',
+    'forms', 'admin', 'base', 'server', 'client', 'reducers', 'selectors',
+    'queries', 'mutations', 'providers', 'serializers', 'seeds', 'conftest',
+    'loading', 'error', 'not-found', 'template', 'head',
   },
 }
 
-H.default_config = vim.deepcopy(Tabline.config)
+Tabline.config = vim.deepcopy(default_config)
 
 Tabline.setup = function(config)
   _G.Tabline = Tabline
-  config = H.setup_config(config)
-  H.apply_config(config)
-  vim.o.tabline = '%!v:lua.Tabline.render()'
-end
-
-H.setup_config = function(config)
   vim.validate({ config = { config, 'table', true } })
-  return vim.tbl_deep_extend('force', vim.deepcopy(H.default_config), config or {})
-end
-
-H.apply_config = function(config)
-  Tabline.config = config
-end
-
-H.get_config = function()
-  return Tabline.config
+  Tabline.config = vim.tbl_deep_extend('force', vim.deepcopy(default_config), config or {})
+  vim.o.tabline = '%!v:lua.Tabline.render()'
 end
 
 H.format_path = function(bufnr, config)
@@ -51,14 +44,7 @@ H.format_path = function(bufnr, config)
 
   local filename = parts[n]
   local file_stem = vim.fn.fnamemodify(filename, ':r')
-
-  local is_special = false
-  for _, special in ipairs(config.special_files) do
-    if file_stem == special then
-      is_special = true
-      break
-    end
-  end
+  local is_special = vim.tbl_contains(config.special_files, file_stem)
 
   local result_parts = {}
   for i = 1, n - 1 do
@@ -66,8 +52,7 @@ H.format_path = function(bufnr, config)
     if is_special and i == n - 1 then
       table.insert(result_parts, part)
     else
-      local truncated = part:sub(1, part:sub(1, 1) == '.' and 2 or 1)
-      table.insert(result_parts, truncated)
+      table.insert(result_parts, part:sub(1, 2))
     end
   end
   table.insert(result_parts, filename)
@@ -76,14 +61,12 @@ H.format_path = function(bufnr, config)
 end
 
 Tabline.render = function()
-  local config = H.get_config()
+  local config = Tabline.config
   local current = vim.fn.tabpagenr()
   local total = vim.fn.tabpagenr('$')
   local width = vim.o.columns
 
   local tabs = {}
-  local total_tabs_width = 0
-
   for i = 1, total do
     local winnr = vim.fn.tabpagewinnr(i)
     local buflist = vim.fn.tabpagebuflist(i)
@@ -92,16 +75,18 @@ Tabline.render = function()
     local modified = (config.show_modified and vim.fn.getbufvar(bufnr, '&modified') == 1)
         and config.modified_indicator or ''
     local label = ' ' .. modified .. name .. ' '
-
     tabs[i] = { label = label, len = #label }
-    total_tabs_width = total_tabs_width + #label
   end
 
-  local is_overflowing = total_tabs_width > (width - 10)
+  local total_tabs_width = 0
+  for i = 1, total do total_tabs_width = total_tabs_width + tabs[i].len end
+
+  -- Reserve 12 columns for navigation arrows
+  local available = width - 12
+  local is_overflowing = total_tabs_width > available
 
   local start_tab, end_tab = 1, total
   if is_overflowing then
-    local available = width - 12
     local used = tabs[current].len
     start_tab = current
     end_tab = current
@@ -129,11 +114,7 @@ Tabline.render = function()
   end
 
   for i = start_tab, end_tab do
-    if i == current then
-      s = s .. '%#TabLineSel#'
-    else
-      s = s .. '%#TabLine#'
-    end
+    s = s .. (i == current and '%#TabLineSel#' or '%#TabLine#')
     s = s .. '%' .. i .. 'T'
     s = s .. tabs[i].label
   end
@@ -141,7 +122,8 @@ Tabline.render = function()
   s = s .. '%#TabLineFill#%T'
 
   if config.show_navigation and end_tab < total then
-    s = s .. '%=' .. '%#TabLine# ' .. config.navigation_right .. ' '
+    -- %= pushes the right navigation arrow to the far right
+    s = s .. '%=%#TabLine# ' .. config.navigation_right .. ' '
   end
 
   return s

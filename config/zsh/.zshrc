@@ -36,7 +36,6 @@ eval "$(mise activate zsh)"
 
 # Env vars
 export DOTS="$HOME/dev/personal/dotfiles"
-export RIPGREP_CONFIG_PATH="$DOTS/other/.ripgreprc"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export HOMEBREW_NO_ENV_HINTS=1
@@ -96,17 +95,6 @@ alias gpf="git push --force-with-lease"
 function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | head -1 | xargs git checkout } # Checkout master/main
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|wip\|tmp\|temp\|\*" | xargs git branch -D } # Cleanup branches
-
-function y() {
-  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-
-  yazi "$@" --cwd-file="$tmp"
-  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-    builtin cd -- "$cwd"
-  fi
-
-  rm -f -- "$tmp"
-}
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then
