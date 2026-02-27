@@ -5,8 +5,10 @@ local default_config = {
   show_modified = true,
   modified_indicator = '[+] ',
   show_navigation = true,
+  show_navigation_count = false,
   navigation_left = '< ',
   navigation_right = ' >',
+  -- Show full name of parent dir
   special_files = {
     'index', 'init', '__init__', 'main', 'app', 'config', 'types', 'utils',
     'routes', 'settings', 'page', 'layout', 'component', 'style', 'styles',
@@ -110,7 +112,8 @@ Tabline.render = function()
   local s = ''
 
   if config.show_navigation and start_tab > 1 then
-    s = s .. '%#TabLine# ' .. config.navigation_left .. ' '
+    local count = config.show_navigation_count and '(' .. (start_tab - 1) .. ') ' or ''
+    s = s .. '%#TabLine# ' .. count .. config.navigation_left .. ' '
   end
 
   for i = start_tab, end_tab do
@@ -123,7 +126,8 @@ Tabline.render = function()
 
   if config.show_navigation and end_tab < total then
     -- %= pushes the right navigation arrow to the far right
-    s = s .. '%=%#TabLine# ' .. config.navigation_right .. ' '
+    local count = config.show_navigation_count and ' (' .. (total - end_tab) .. ')' or ''
+    s = s .. '%=%#TabLine# ' .. config.navigation_right .. count .. ' '
   end
 
   return s

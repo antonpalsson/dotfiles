@@ -27,11 +27,11 @@ vim.o.scrolloff = 10
 vim.o.inccommand = "split"
 vim.o.confirm = true
 
-require("tabline").setup({})
+require("tabline").setup({ show_navigation_count = true })
 require("session").setup({ auto_load = true })
 
 if vim.env.MINIMAL_NVIM then
-  -- Fix tabline for minimal
+  -- Fix tabline colors for minimal
   vim.api.nvim_set_hl(0, "TabLineSel", { bold = true, reverse = true })
 else
   -- Theme

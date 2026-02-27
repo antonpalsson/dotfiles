@@ -1,14 +1,18 @@
 # Dots 🧶
 ![Mi casa su casa](./mi-casa-su-casa.jpeg)
 
-## Setup
-### MacOS
-```sh
-brew install git stow neovim tmux mise zoxide
-./install.sh
+# Install
+```bash
+./install --profile=mac    # MacOS
+./install --profile=raspi  # Raspberry Pi
 ```
-### Raspi
-```sh
-sudo apt install git stow neovim
-./install.sh --profile=raspi
-```
+
+| Tool | MacOS | Raspi |
+|------|-------|-------|
+| git | ✓ | ✓ |
+| stow | ✓ | ✓ |
+| neovim | ✓ | ✓ |
+| tmux | ✓ | |
+| mise | ✓ | |
+| zoxide | ✓ | |
+

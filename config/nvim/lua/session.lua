@@ -227,12 +227,12 @@ Session.delete = function()
   H.notify("Session deleted: " .. repo)
 end
 
-Session.prune = function()
+Session.purge = function()
   local cfg = H.get_config()
   local files = vim.fn.glob(cfg.session_dir .. '/*' .. cfg.file_extension, false, true)
 
   if #files == 0 then
-    H.notify("No sessions to prune")
+    H.notify("No sessions to purge")
     return
   end
 
@@ -240,7 +240,7 @@ Session.prune = function()
     vim.fn.delete(f)
   end
 
-  H.notify("Pruned " .. #files .. " session" .. (#files == 1 and "" or "s"))
+  H.notify("Purged " .. #files .. " session" .. (#files == 1 and "" or "s"))
 end
 
 Session.list = function()
@@ -280,7 +280,7 @@ H.create_user_command = function()
   end, {
     nargs = 1,
     complete = function()
-      return { "save", "load", "list", "delete", "prune" }
+      return { "save", "load", "list", "delete", "purge" }
     end,
   })
 end

@@ -36,4 +36,4 @@ case "$PROFILE" in
     ;;
 esac
 
-echo "Done."
+echo "Done!"

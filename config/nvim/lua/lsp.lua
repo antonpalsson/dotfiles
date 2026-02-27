@@ -34,6 +34,7 @@ if not vim.env.MINIMAL_NVIM then
 
   vim.lsp.config('biome', {
     capabilities = capabilities,
+    cmd = { 'node_modules/.bin/biome', 'lsp-proxy' },
     filetypes = {
       "astro",
       "css",
