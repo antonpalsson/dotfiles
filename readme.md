@@ -3,16 +3,18 @@
 
 # Install
 ```bash
-./install --profile=mac    # MacOS
-./install --profile=raspi  # Raspberry Pi
+./install --profile=ye
+./install --profile=yi
+./install --profile=dlille
 ```
 
-| Tool | MacOS | Raspi |
-|------|-------|-------|
-| git | ✓ | ✓ |
-| stow | ✓ | ✓ |
-| neovim | ✓ | ✓ |
-| tmux | ✓ | |
-| mise | ✓ | |
-| zoxide | ✓ | |
+**Configs**
+| Profile | ye | yi | dlille |
+|------|-----|--------|-------|
+| zsh | ✓ | ✓ | ✓ |
+| neovim | ✓ | ✓ | ✓ |
+| tmux | ✓ | ✓ |   |
+| ghostty | ✓ | ✓ |   |
+| hyprland |   | ✓ |   |
+
 

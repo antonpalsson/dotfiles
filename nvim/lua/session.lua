@@ -69,17 +69,22 @@ H.get_config = function()
   return vim.tbl_deep_extend('force', Session.config, vim.b.session_config or {})
 end
 
-H.get_repo_name = function()
+H.get_repo_info = function()
   local handle = io.popen("git rev-parse --show-toplevel 2>/dev/null")
 
-  if not handle then return nil end
+  if not handle then return nil, nil end
 
   local path = handle:read("*l")
   handle:close()
 
-  if not path or path == '' then return nil end
+  if not path or path == '' then return nil, nil end
 
-  return vim.fn.fnamemodify(path, ":t")
+  return vim.fn.fnamemodify(path, ":t"), path
+end
+
+H.get_repo_name = function()
+  local name = H.get_repo_info()
+  return name
 end
 
 H.get_session_path = function()
@@ -169,6 +174,9 @@ Session.load = function()
     H.notify("Session load failed: " .. (err or 'unknown'), vim.log.levels.ERROR)
     return
   end
+
+  local _, root = H.get_repo_info()
+  if root then vim.cmd('cd ' .. vim.fn.fnameescape(root)) end
 
   if vim.fn.filereadable(path) == 0 then
     H.notify("No session found for: " .. repo, vim.log.levels.WARN)

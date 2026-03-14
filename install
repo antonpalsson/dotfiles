@@ -14,24 +14,43 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$PROFILE" ]; then
-  echo "Error: --profile is required. Available profiles: mac, raspi"
+  echo "Error: --profile is required. Available profiles: ye, yi, dlille"
   exit 1
 fi
 
 echo "Profile: $PROFILE"
-mkdir -p "$HOME/.config"
+
+stow_to() {
+  target="$1"; pkg="$2"
+  mkdir -p "$target"
+  stow --target "$target" --dir "$DOTFILES_DIR" --restow "$pkg"
+}
 
 case "$PROFILE" in
-  raspi)
-    stow --target "$HOME/.config" --dir "$DOTFILES_DIR" --restow --ignore='ghostty' --ignore='tmux' --ignore='zsh' config
-    stow --target "$HOME" --dir "$DOTFILES_DIR" --restow --ignore='\.zshenv' home
+  ye)
+    stow_to "$HOME"                 home
+    stow_to "$HOME/.config/zsh"     zsh-mac
+    stow_to "$HOME/.config/zsh"     zsh
+    stow_to "$HOME/.config/nvim"    nvim
+    stow_to "$HOME/.config/tmux"    tmux
+    stow_to "$HOME/.config/ghostty" ghostty
     ;;
-  mac)
-    stow --target "$HOME/.config" --dir "$DOTFILES_DIR" --restow config
-    stow --target "$HOME" --dir "$DOTFILES_DIR" --restow --ignore='\.bashrc' home
+  yi)
+    stow_to "$HOME"                 home
+    stow_to "$HOME/.config/zsh"     zsh-fedora
+    stow_to "$HOME/.config/zsh"     zsh
+    stow_to "$HOME/.config/nvim"    nvim
+    stow_to "$HOME/.config/tmux"    tmux
+    stow_to "$HOME/.config/ghostty" ghostty
+    stow_to "$HOME/.config/hypr"    hypr
+    ;;
+  dlille)
+    stow_to "$HOME"                 home
+    stow_to "$HOME/.config/zsh"     zsh-raspi
+    stow_to "$HOME/.config/nvim"    nvim
     ;;
   *)
-    echo "Error: Unknown profile '$PROFILE'. Available profiles: mac, raspi"
+    echo "Error: Unknown profile '$PROFILE'. Available profiles: ye, yi, dlille"
     exit 1
     ;;
 esac

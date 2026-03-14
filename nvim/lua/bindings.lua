@@ -3,7 +3,7 @@ vim.keymap.set("n", "<leader>te", ":Ex<CR>", {})         -- Explore
 vim.keymap.set("n", "<leader>tn", ":tabnew<CR>", {})     -- New tab
 vim.keymap.set("n", "<leader>tN", ":0tabnew<CR>", {})    -- New tab to the far left
 vim.keymap.set("n", "<leader>q", ":quit<CR>", {})        -- Close tab
-vim.keymap.set("n", "<leader>w", ":write<CR>", {})       -- Wrtie tab
+vim.keymap.set("n", "<leader>w", ":write<CR>", {})       -- Write tab
 vim.keymap.set("n", "<leader>th", ":tabmove -1<CR>", {}) -- Move tab left/right
 vim.keymap.set("n", "<leader>tl", ":tabmove +1<CR>", {})
 vim.keymap.set("n", "<leader>td", ":tab split<CR>", {})  -- Duplicate tab
@@ -146,7 +146,7 @@ vim.keymap.set("n", "<leader>bdh", function()
   for _, buf in ipairs(buffers) do
     if not visible_buffers[buf]
       and vim.api.nvim_buf_is_loaded(buf)
-      and not vim.api.nvim_get_option_value("modified", {}) then
+      and not vim.api.nvim_get_option_value("modified", { buf = buf }) then
       vim.api.nvim_buf_delete(buf, { force = false })
     end
   end
