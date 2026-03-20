@@ -1,0 +1,27 @@
+* {
+    font-family: monospace;
+    font-size: 13px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window#waybar {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+#workspaces button {
+    padding: 0 5px;
+    color: #888888;
+    background: transparent;
+    border-radius: 0;
+}
+
+#workspaces button.active {
+    color: #ffffff;
+}
+
+#clock, #pulseaudio, #network, #battery {
+    padding: 0 8px;
+}

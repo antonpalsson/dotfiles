@@ -15,6 +15,6 @@
 | neovim | ✓ | ✓ | ✓ |
 | tmux | ✓ | ✓ |   |
 | ghostty | ✓ | ✓ |   |
-| hyprland |   | ✓ |   |
+| hyprland |   |   |   |
 
 
