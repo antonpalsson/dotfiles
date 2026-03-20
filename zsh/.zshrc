@@ -1,6 +1,11 @@
 # Prompt
 PROMPT='%B%F{green}%n@%m%f%b %f%F{blue}%~%f %# '
 
+# Vi mode
+export KEYTIMEOUT=1
+bindkey -v
+bindkey -v '^?' backward-delete-char
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
@@ -80,6 +85,14 @@ alias gpf="git push --force-with-lease"
 function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | head -1 | xargs git checkout } # Checkout master/main
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|wip\|tmp\|temp\|\*" | xargs git branch -D } # Cleanup branches
+
+# Keyboard
+bindkey "^[[3~" delete-char      # Delete
+bindkey "^[[H"  beginning-of-line # Home
+bindkey "^[[F"  end-of-line       # End
+bindkey "^[[2~" overwrite-mode    # Insert
+bindkey "^[[5~" beginning-of-buffer-or-history # PageUp
+bindkey "^[[6~" end-of-buffer-or-history       # PageDown
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then
