@@ -85,6 +85,9 @@ alias gpf="git push --force-with-lease"
 function gcm() { git branch --format "%(refname:short)" | grep "master\|main" | head -1 | xargs git checkout } # Checkout master/main
 function gcol() { git branch --format "%(refname:short)" | grep -i -m 1 "$@" | xargs git checkout } # I'm feeling lucky checkout
 function gbda() { git branch | grep -v "master\|main\|develop\|wip\|tmp\|temp\|\*" | xargs git branch -D } # Cleanup branches
+function gchy() { git rev-parse HEAD | tr -d '\n' | pbcopy && echo "Copied $(git rev-parse --short HEAD)" } # Copy last commit hash
+function gwip() { git add -A && if git log -1 --format='%s' | grep -q '^WIP'; then git commit --amend --no-edit; else git commit -m "WIP"; fi } # WIP commit (amends if last is WIP)
+function gunwip() { if git log -1 --format='%s' | grep -q '^WIP'; then git reset HEAD~1; else echo "Last commit is not a WIP"; fi } # Undo WIP commit
 
 # Keyboard
 bindkey "^[[3~" delete-char      # Delete
