@@ -4,16 +4,22 @@ background = 000000
 foreground = ffffff
 
 title = " "
-macos-titlebar-proxy-icon = hidden
 
 # font-family = SF Mono
-font-size = 13
+font-size = 11
 font-style-bold = true
 font-thicken = true
 font-thicken-strength = 31
 
 macos-icon = custom
 macos-custom-icon = ~/.config/ghostty/icon.png
+macos-titlebar-proxy-icon = hidden
+
+gtk-titlebar-hide-when-maximized = true
+
+window-height = 50
+window-width = 180
 
 mouse-hide-while-typing = true
 scrollback-limit = 1000000
+desktop-notifications = false

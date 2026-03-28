@@ -42,10 +42,6 @@ case "$PROFILE" in
     stow_to "$HOME/.config/nvim"    nvim
     stow_to "$HOME/.config/tmux"    tmux
     stow_to "$HOME/.config/ghostty" ghostty
-    # stow_to "$HOME/.config/hypr"    hypr
-    # stow_to "$HOME/.config/waybar"  waybar
-    # stow_to "$HOME/.config/mako"    mako
-    # stow_to "$HOME/.config/wofi"    wofi
     ;;
   dlille)
     stow_to "$HOME"                 home
