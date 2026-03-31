@@ -6,7 +6,7 @@ foreground = ffffff
 title = " "
 
 # font-family = SF Mono
-font-size = 11
+font-size = 13
 font-style-bold = true
 font-thicken = true
 font-thicken-strength = 31

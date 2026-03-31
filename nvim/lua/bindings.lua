@@ -16,40 +16,38 @@ vim.keymap.set("v", "<", "<gv", {})
 vim.keymap.set("i", "<C-f>", "<Right>")                  -- Mini jumps
 vim.keymap.set("i", "<C-b>", "<Left>")
 
-if not vim.env.MINIMAL_NVIM then
-  -- Picker bindings
-  local picker_opts = { layout = { preset = "ivy_split", layout = { height = 0.25 } } }
-  vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts) end, { desc = "Find Files" })
-  vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts) end, { desc = "Grep (Live)" })
-  vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts) end, { desc = "Git Hunks" })
-  vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
-  vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log() end, { desc = "Git Commits" })
-  vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics" })
-  vim.keymap.set("n", "<leader>f:", function() Snacks.picker.commands() end, { desc = "Commands" })
-  vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
+-- Picker bindings
+local picker_opts = { layout = { preset = "ivy_split", layout = { height = 0.25 } } }
+vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts) end, { desc = "Find Files" })
+vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts) end, { desc = "Grep (Live)" })
+vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts) end, { desc = "Git Hunks" })
+vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
+vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log() end, { desc = "Git Commits" })
+vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics" })
+vim.keymap.set("n", "<leader>f:", function() Snacks.picker.commands() end, { desc = "Commands" })
+vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
 
-  -- DiffView bindings
-  vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview: Open" })
-  vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewOpen HEAD~1<cr>", { desc = "Diffview: Compare HEAD~1" })
-  vim.keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", { desc = "Diffview: Current File History" })
-  vim.keymap.set("n", "<leader>gx", "<cmd>DiffviewClose<cr>", { desc = "Diffview: Close" })
+-- DiffView bindings
+vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview: Open" })
+vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewOpen HEAD~1<cr>", { desc = "Diffview: Compare HEAD~1" })
+vim.keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", { desc = "Diffview: Current File History" })
+vim.keymap.set("n", "<leader>gx", "<cmd>DiffviewClose<cr>", { desc = "Diffview: Close" })
 
-  -- Lsp bindings
-  vim.keymap.set("n", "grr", function() Snacks.picker.lsp_references() end, { desc = "LSP References" })
-  vim.keymap.set("n", "grd", function() Snacks.picker.lsp_declarations() end, { desc = "LSP Declaration" })
-  vim.keymap.set("n", "gri", function() Snacks.picker.lsp_implementations() end, { desc = "LSP Implementation" })
-  vim.keymap.set("n", "grt", function() Snacks.picker.lsp_type_definitions() end, { desc = "LSP Type Definition" })
-  vim.keymap.set("n", "grs", function() Snacks.picker.lsp_symbols() end, { desc = "LSP Symbols (Buffer)" })
-  vim.keymap.set("n", "grS", function() Snacks.picker.lsp_workspace_symbols() end, { desc = "LSP Symbols (Workspace)" })
-  vim.keymap.set("n", "<leader>dd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics (Buffer)" })
-  vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer() end, { desc = "Diagnostics (All)" })
-  vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, { desc = "LSP Format" })
-  vim.keymap.set("n", "gd", function() Snacks.picker.lsp_definitions() end, { desc = "LSP Definition" })
-  vim.keymap.set("n", "gD", function()
-    vim.cmd('tab split')
-    Snacks.picker.lsp_definitions()
-  end, { desc = "LSP Definition in new tab" })
-end
+-- Lsp bindings
+vim.keymap.set("n", "grr", function() Snacks.picker.lsp_references() end, { desc = "LSP References" })
+vim.keymap.set("n", "grd", function() Snacks.picker.lsp_declarations() end, { desc = "LSP Declaration" })
+vim.keymap.set("n", "gri", function() Snacks.picker.lsp_implementations() end, { desc = "LSP Implementation" })
+vim.keymap.set("n", "grt", function() Snacks.picker.lsp_type_definitions() end, { desc = "LSP Type Definition" })
+vim.keymap.set("n", "grs", function() Snacks.picker.lsp_symbols() end, { desc = "LSP Symbols (Buffer)" })
+vim.keymap.set("n", "grS", function() Snacks.picker.lsp_workspace_symbols() end, { desc = "LSP Symbols (Workspace)" })
+vim.keymap.set("n", "<leader>dd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics (Buffer)" })
+vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer() end, { desc = "Diagnostics (All)" })
+vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, { desc = "LSP Format" })
+vim.keymap.set("n", "gd", function() Snacks.picker.lsp_definitions() end, { desc = "LSP Definition" })
+vim.keymap.set("n", "gD", function()
+  vim.cmd('tab split')
+  Snacks.picker.lsp_definitions()
+end, { desc = "LSP Definition in new tab" })
 
 -- Diagnostic bindings
 vim.keymap.set("n", "]d", function()

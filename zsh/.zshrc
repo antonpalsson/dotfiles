@@ -28,6 +28,11 @@ eval "$(zoxide init zsh)"
 eval "$(mise activate zsh)"
 source <(fzf --zsh)
 
+# Vars
+export EDITOR="nvim"
+export VISUAL="nvim"
+export HOMEBREW_NO_ENV_HINTS=1
+
 # Aliases
 alias sa="source $HOME/.config/zsh/.zshrc"
 alias q="exit"
