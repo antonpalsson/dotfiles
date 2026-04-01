@@ -17,10 +17,13 @@ vim.keymap.set("i", "<C-f>", "<Right>")                  -- Mini jumps
 vim.keymap.set("i", "<C-b>", "<Left>")
 
 -- Picker bindings
-local picker_opts = { layout = { preset = "ivy_split", layout = { height = 0.25 } } }
-vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts) end, { desc = "Find Files" })
-vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts) end, { desc = "Grep (Live)" })
-vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts) end, { desc = "Git Hunks" })
+local function picker_opts()
+  return { layout = { preset = "ivy_split", layout = { height = 0.25 } } }
+end
+
+vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts()) end, { desc = "Find Files" })
+vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts()) end, { desc = "Grep (Live)" })
+vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts()) end, { desc = "Git Hunks" })
 vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
 vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log() end, { desc = "Git Commits" })
 vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics" })

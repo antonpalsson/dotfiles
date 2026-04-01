@@ -1,53 +1,26 @@
 local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-vim.lsp.config('ts_ls', {
+vim.lsp.config('*', {
   capabilities = capabilities,
-  init_options = {
-    tsserver = {
-      path = vim.fn.getcwd() .. '/node_modules/typescript/lib'
-    }
-  },
-  filetypes = {
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  },
+  root_markers = { '.git' },
+})
+
+vim.lsp.config('ts_ls', {
+  root_markers = { 'tsconfig.json', 'package.json' },
 })
 
 vim.lsp.config('eslint', {
-  capabilities = capabilities,
-  filetypes = {
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "vue",
-    "svelte",
-    "astro",
-    "htmlangular"
-  }
+  root_markers = {
+    'eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs',
+    '.eslintrc', '.eslintrc.js', '.eslintrc.json',
+    '.eslintrc.yml', '.eslintrc.yaml',
+  },
 })
 
-vim.lsp.config('tailwindcss', { capabilities = capabilities })
+vim.lsp.config('tailwindcss', {})
 
 vim.lsp.config('biome', {
-  capabilities = capabilities,
-  cmd = { 'node_modules/.bin/biome', 'lsp-proxy' },
-  filetypes = {
-    "astro",
-    "css",
-    "graphql",
-    "html",
-    "javascript",
-    "javascriptreact",
-    "json",
-    "jsonc",
-    "svelte",
-    "typescript",
-    "typescriptreact",
-    "vue"
-  }
+  root_markers = { 'biome.json', 'biome.jsonc' },
 })
 
 vim.lsp.config('ltex', {
@@ -57,7 +30,7 @@ vim.lsp.config('ltex', {
 })
 
 vim.lsp.config('ruby_lsp', {
-  capabilities = capabilities,
+  root_markers = { 'Gemfile' },
   init_options = {
     addonSettings = {
       ["Ruby LSP Rails"] = { enablePendingMigrationsPrompt = false }
@@ -66,7 +39,6 @@ vim.lsp.config('ruby_lsp', {
 })
 
 vim.lsp.config('lua_ls', {
-  capabilities = capabilities,
   settings = {
     Lua = {
       runtime = { version = 'LuaJIT' },
