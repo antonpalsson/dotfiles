@@ -70,7 +70,7 @@ vim.keymap.set("n", "<leader>ld", function()
 end, { desc = "Toggle diagnostic virtual lines" })
 
 -- Copy line (trimmed)
-vim.keymap.set("n", "<leader>yy", function()
+vim.keymap.set("n", "<leader>y", function()
   local line = vim.fn.getline(".")
   local trimmed = vim.trim(line)
   vim.fn.setreg("+", trimmed)
@@ -78,7 +78,7 @@ vim.keymap.set("n", "<leader>yy", function()
 end, { desc = "Copy trimmed line" })
 
 -- Copy Selection
-vim.keymap.set("v", "<leader>yy", function()
+vim.keymap.set("v", "<leader>y", function()
   vim.cmd('normal! "+y')
   local text = vim.fn.getreg("+")
   local cleaned = text:gsub("\n$", "")
@@ -86,28 +86,21 @@ vim.keymap.set("v", "<leader>yy", function()
   vim.notify("Copied selection")
 end, { desc = "Copy selection" })
 
--- Copy filename
-vim.keymap.set("n", "<leader>yn", function()
-  local name = vim.fn.expand("%:t")
-  vim.fn.setreg("+", name)
-  vim.notify("Copied name: " .. name)
-end, { desc = "Copy filename" })
-
 -- Copy relative path
-vim.keymap.set("n", "<leader>yf", function()
+vim.keymap.set("n", "<leader>f", function()
   local path = vim.fn.expand("%:.")
   vim.fn.setreg("+", path)
   vim.notify("Copied relative: " .. path)
 end, { desc = "Copy relative path" })
 
 -- Copy absolute path
-vim.keymap.set("n", "<leader>yF", function()
+vim.keymap.set("n", "<leader>F", function()
   local full_path = vim.fn.expand("%:p")
   vim.fn.setreg("+", full_path)
   vim.notify("Copied absolute: " .. full_path)
 end, { desc = "Copy absolute path" })
 
-vim.keymap.set({ "n", "v" }, "<leader>yp", '"+p', { desc = "Paste from clipboard" })
+vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', { desc = "Paste from clipboard" })
 
 -- Toggle wrap
 vim.keymap.set("n", "<leader>tw", function()
@@ -154,26 +147,3 @@ vim.keymap.set("n", "<leader>bdh", function()
 
   vim.notify("Deleted hidden buffers")
 end, {})
-
--- Expand quickfix list into new tabs
-vim.keymap.set("n", "<leader>co", function()
-  if vim.bo.buftype ~= "quickfix" then return end
-
-  local qf_winid = vim.fn.win_getid()
-  local qf_list = vim.fn.getqflist()
-
-  for _, entry in ipairs(qf_list) do
-    if entry.valid == 1 and entry.bufnr > 0 then
-      local filepath = vim.fn.bufname(entry.bufnr)
-      if filepath and filepath ~= "" then
-        vim.cmd("tabnew " .. vim.fn.fnameescape(filepath))
-      end
-    end
-  end
-
-  vim.fn.win_gotoid(qf_winid)
-  vim.cmd("close")
-
-  vim.notify("Expanded quickfix list into new tabs")
-end, {})
-

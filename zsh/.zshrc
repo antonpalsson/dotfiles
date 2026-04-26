@@ -1,3 +1,6 @@
+typeset -U path
+path=($HOME/.local/bin $path)
+
 # Prompt
 PROMPT='%B%F{green}%n@%m%f%b %f%F{blue}%~%f %# '
 
