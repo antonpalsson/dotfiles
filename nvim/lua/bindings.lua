@@ -21,6 +21,7 @@ local function picker_opts()
   return { layout = { preset = "ivy_split", layout = { height = 0.25 } } }
 end
 
+vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
 vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts()) end, { desc = "Find Files" })
 vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts()) end, { desc = "Grep (Live)" })
 vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts()) end, { desc = "Git Hunks" })
@@ -28,13 +29,13 @@ vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc
 vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log() end, { desc = "Git Commits" })
 vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics" })
 vim.keymap.set("n", "<leader>f:", function() Snacks.picker.commands() end, { desc = "Commands" })
-vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
 
 -- DiffView bindings
-vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview: Open" })
-vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewOpen HEAD~1<cr>", { desc = "Diffview: Compare HEAD~1" })
-vim.keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", { desc = "Diffview: Current File History" })
-vim.keymap.set("n", "<leader>gx", "<cmd>DiffviewClose<cr>", { desc = "Diffview: Close" })
+vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diff (index)" })
+vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File History" })
+vim.keymap.set("n", "<leader>gH", "<cmd>DiffviewFileHistory<cr>", { desc = "Repo History" })
+vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Diff Close" })
+vim.keymap.set("v", "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", { desc = "History (range)" })
 
 -- Lsp bindings
 vim.keymap.set("n", "grr", function() Snacks.picker.lsp_references() end, { desc = "LSP References" })
@@ -48,9 +49,40 @@ vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer() 
 vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, { desc = "LSP Format" })
 vim.keymap.set("n", "gd", function() Snacks.picker.lsp_definitions() end, { desc = "LSP Definition" })
 vim.keymap.set("n", "gD", function()
-  vim.cmd('tab split')
+  vim.cmd("tab split")
   Snacks.picker.lsp_definitions()
 end, { desc = "LSP Definition in new tab" })
+
+-- Resize mode
+local resize_keys = {
+  [">"] = "vertical resize +4",
+  ["<"] = "vertical resize -4",
+  ["+"] = "resize +4",
+  ["-"] = "resize -4",
+}
+
+local function sticky_resize(cmd)
+  vim.notify("Resize mode", vim.log.levels.WARN, { id = "resize_mode", timeout = false })
+  vim.cmd(cmd)
+  vim.cmd("redraw")
+
+  while true do
+    local key = vim.fn.getchar()
+    local action = resize_keys[type(key) == "number" and vim.fn.nr2char(key) or key]
+    if action then
+      vim.cmd(action)
+      vim.cmd("redraw")
+    else
+      if type(key) == "number" then vim.fn.feedkeys(vim.fn.nr2char(key), "n") end
+      Snacks.notifier.hide("resize_mode")
+      break
+    end
+  end
+end
+
+for key, cmd in pairs(resize_keys) do
+  vim.keymap.set("n", "<C-w>" .. key, function() sticky_resize(cmd) end)
+end
 
 -- Diagnostic bindings
 vim.keymap.set("n", "]d", function()
@@ -87,7 +119,7 @@ vim.keymap.set("v", "<leader>y", function()
 end, { desc = "Copy selection" })
 
 -- Copy relative path
-vim.keymap.set("n", "<leader>f", function()
+vim.keymap.set("n", "<leader>r", function()
   local path = vim.fn.expand("%:.")
   vim.fn.setreg("+", path)
   vim.notify("Copied relative: " .. path)
@@ -121,29 +153,6 @@ end, {})
 
 -- Delete all buffers
 vim.keymap.set("n", "<leader>bda", function()
-  vim.cmd('%bdelete!')
+  vim.cmd("%bdelete!")
   vim.notify("Deleted all buffers")
-end, {})
-
--- Delete all hidden buffers
-vim.keymap.set("n", "<leader>bdh", function()
-  local buffers = vim.api.nvim_list_bufs()
-
-  local visible_buffers = {}
-  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
-    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
-      local buf = vim.api.nvim_win_get_buf(win)
-      visible_buffers[buf] = true
-    end
-  end
-
-  for _, buf in ipairs(buffers) do
-    if not visible_buffers[buf]
-      and vim.api.nvim_buf_is_loaded(buf)
-      and not vim.api.nvim_get_option_value("modified", { buf = buf }) then
-      vim.api.nvim_buf_delete(buf, { force = false })
-    end
-  end
-
-  vim.notify("Deleted hidden buffers")
 end, {})
