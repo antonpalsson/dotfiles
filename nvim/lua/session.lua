@@ -2,14 +2,14 @@ local Session = {}
 local H = {}
 
 Session.config = {
-  session_dir     = vim.fn.stdpath('data') .. '/sessions',
-  file_extension  = '.txt',
+  session_dir     = vim.fn.stdpath("data") .. "/sessions",
+  file_extension  = ".txt",
   auto_create_dir = true,
   auto_save       = false,
   auto_load       = false,
   notify          = true,
   notify_level    = vim.log.levels.INFO,
-  command_name    = 'Session',
+  command_name    = "Session",
 }
 
 H.default_config = vim.deepcopy(Session.config)
@@ -21,19 +21,19 @@ Session.setup = function(config)
   H.apply_config(config)
 
   if config.auto_create_dir then
-    vim.fn.mkdir(H.get_config().session_dir, 'p')
+    vim.fn.mkdir(H.get_config().session_dir, "p")
   end
 
   if config.auto_save then
-    vim.api.nvim_create_autocmd('VimLeavePre', {
-      group = vim.api.nvim_create_augroup('SessionAutoSave', { clear = true }),
+    vim.api.nvim_create_autocmd("VimLeavePre", {
+      group = vim.api.nvim_create_augroup("SessionAutoSave", { clear = true }),
       callback = Session.save,
     })
   end
 
   if config.auto_load then
-    vim.api.nvim_create_autocmd('VimEnter', {
-      group = vim.api.nvim_create_augroup('SessionAutoLoad', { clear = true }),
+    vim.api.nvim_create_autocmd("VimEnter", {
+      group = vim.api.nvim_create_augroup("SessionAutoLoad", { clear = true }),
       nested = true,
       callback = function()
         if vim.fn.argc() ~= 0 then return end
@@ -47,18 +47,18 @@ Session.setup = function(config)
 end
 
 H.setup_config = function(config)
-  H.check_type('config', config, 'table', true)
+  H.check_type("config", config, "table", true)
 
-  config = vim.tbl_deep_extend('force', H.default_config, config or {})
+  config = vim.tbl_deep_extend("force", H.default_config, config or {})
 
-  H.check_type('session_dir', config.session_dir, 'string')
-  H.check_type('file_extension', config.file_extension, 'string')
-  H.check_type('auto_create_dir', config.auto_create_dir, 'boolean')
-  H.check_type('auto_save', config.auto_save, 'boolean')
-  H.check_type('auto_load', config.auto_load, 'boolean')
-  H.check_type('notify', config.notify, 'boolean')
-  H.check_type('notify_level', config.notify_level, 'number')
-  H.check_type('command_name', config.command_name, 'string')
+  H.check_type("session_dir", config.session_dir, "string")
+  H.check_type("file_extension", config.file_extension, "string")
+  H.check_type("auto_create_dir", config.auto_create_dir, "boolean")
+  H.check_type("auto_save", config.auto_save, "boolean")
+  H.check_type("auto_load", config.auto_load, "boolean")
+  H.check_type("notify", config.notify, "boolean")
+  H.check_type("notify_level", config.notify_level, "number")
+  H.check_type("command_name", config.command_name, "string")
 
   return config
 end
@@ -66,7 +66,7 @@ end
 H.apply_config = function(config) Session.config = config end
 
 H.get_config = function()
-  return vim.tbl_deep_extend('force', Session.config, vim.b.session_config or {})
+  return vim.tbl_deep_extend("force", Session.config, vim.b.session_config or {})
 end
 
 H.get_repo_info = function()
@@ -77,7 +77,7 @@ H.get_repo_info = function()
   local path = handle:read("*l")
   handle:close()
 
-  if not path or path == '' then return nil, nil end
+  if not path or path == "" then return nil, nil end
 
   return vim.fn.fnamemodify(path, ":t"), path
 end
@@ -93,7 +93,7 @@ H.get_session_path = function()
 
   if not repo then return nil, nil, "Not in a git repository" end
 
-  local path = cfg.session_dir .. '/' .. repo .. cfg.file_extension
+  local path = cfg.session_dir .. "/" .. repo .. cfg.file_extension
 
   return path, repo, nil
 end
@@ -109,7 +109,7 @@ end
 H.check_type = function(name, val, ref, allow_nil)
   if (allow_nil and val == nil) or type(val) == ref then return end
 
-  error(string.format('(session) `%s` should be %s, not %s', name, ref, type(val)), 0)
+  error(string.format("(session) `%s` should be %s, not %s", name, ref, type(val)), 0)
 end
 
 H.get_open_files = function()
@@ -121,8 +121,8 @@ H.get_open_files = function()
       local buf = vim.api.nvim_win_get_buf(win)
       if not seen[buf] then
         local path = vim.api.nvim_buf_get_name(buf)
-        local buftype = vim.api.nvim_get_option_value('buftype', { buf = buf })
-        if path ~= '' and buftype == '' then
+        local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
+        if path ~= "" and buftype == "" then
           local cursor = vim.api.nvim_win_get_cursor(win)
           table.insert(files, { path = path, line = cursor[1] })
           seen[buf] = true
@@ -138,7 +138,7 @@ Session.save = function()
   local path, repo, err = H.get_session_path()
 
   if not path or not repo then
-    H.notify("Session save failed: " .. (err or 'unknown'), vim.log.levels.ERROR)
+    H.notify("Session save failed: " .. (err or "unknown"), vim.log.levels.ERROR)
     return
   end
 
@@ -149,41 +149,41 @@ Session.save = function()
     return
   end
 
-  local file = io.open(path, 'w')
+  local file = io.open(path, "w")
   if not file then
     H.notify("Session save failed: could not write to " .. path, vim.log.levels.ERROR)
     return
   end
 
   for _, entry in ipairs(files) do
-    file:write(entry.path .. ':' .. entry.line .. '\n')
+    file:write(entry.path .. ":" .. entry.line .. "\n")
   end
   file:close()
 
   local summary = { "Session saved: " .. repo }
   for _, entry in ipairs(files) do
-    table.insert(summary, "  " .. vim.fn.fnamemodify(entry.path, ':.') .. ':' .. entry.line)
+    table.insert(summary, "  " .. vim.fn.fnamemodify(entry.path, ":.") .. ":" .. entry.line)
   end
-  H.notify(table.concat(summary, '\n'))
+  H.notify(table.concat(summary, "\n"))
 end
 
 Session.load = function()
   local path, repo, err = H.get_session_path()
 
   if not path or not repo then
-    H.notify("Session load failed: " .. (err or 'unknown'), vim.log.levels.ERROR)
+    H.notify("Session load failed: " .. (err or "unknown"), vim.log.levels.ERROR)
     return
   end
 
   local _, root = H.get_repo_info()
-  if root then vim.cmd('cd ' .. vim.fn.fnameescape(root)) end
+  if root then vim.cmd("cd " .. vim.fn.fnameescape(root)) end
 
   if vim.fn.filereadable(path) == 0 then
     H.notify("No session found for: " .. repo, vim.log.levels.WARN)
     return
   end
 
-  local file = io.open(path, 'r')
+  local file = io.open(path, "r")
   if not file then
     H.notify("Session load failed: could not read " .. path, vim.log.levels.ERROR)
     return
@@ -206,14 +206,14 @@ Session.load = function()
   local opened = 0
   for _, entry in ipairs(entries) do
     if vim.fn.filereadable(entry.path) == 1 then
-      if opened > 0 then vim.cmd('tabnew') end
-      vim.cmd('edit ' .. vim.fn.fnameescape(entry.path))
+      if opened > 0 then vim.cmd("tabnew") end
+      vim.cmd("edit " .. vim.fn.fnameescape(entry.path))
       vim.api.nvim_win_set_cursor(0, { entry.line, 0 })
       opened = opened + 1
     end
   end
 
-  if opened > 1 then vim.cmd('tabfirst') end
+  if opened > 1 then vim.cmd("tabfirst") end
 
   H.notify("Session loaded: " .. repo)
 end
@@ -222,7 +222,7 @@ Session.delete = function()
   local path, repo, err = H.get_session_path()
 
   if not path or not repo then
-    H.notify("Session delete failed: " .. (err or 'unknown'), vim.log.levels.ERROR)
+    H.notify("Session delete failed: " .. (err or "unknown"), vim.log.levels.ERROR)
     return
   end
 
@@ -237,7 +237,7 @@ end
 
 Session.purge = function()
   local cfg = H.get_config()
-  local files = vim.fn.glob(cfg.session_dir .. '/*' .. cfg.file_extension, false, true)
+  local files = vim.fn.glob(cfg.session_dir .. "/*" .. cfg.file_extension, false, true)
 
   if #files == 0 then
     H.notify("No sessions to purge")
@@ -253,7 +253,7 @@ end
 
 Session.list = function()
   local cfg = H.get_config()
-  local files = vim.fn.glob(cfg.session_dir .. '/*' .. cfg.file_extension, false, true)
+  local files = vim.fn.glob(cfg.session_dir .. "/*" .. cfg.file_extension, false, true)
 
   if #files == 0 then
     H.notify("No saved sessions")
@@ -263,12 +263,12 @@ Session.list = function()
   local current_repo = H.get_repo_name()
   local lines = { "Saved sessions:" }
   for _, f in ipairs(files) do
-    local name = vim.fn.fnamemodify(f, ':t:r')
+    local name = vim.fn.fnamemodify(f, ":t:r")
     local marker = (name == current_repo) and " *" or ""
     table.insert(lines, "  " .. name .. marker)
   end
 
-  H.notify(table.concat(lines, '\n'))
+  H.notify(table.concat(lines, "\n"))
 end
 
 H.create_user_command = function()
@@ -280,7 +280,7 @@ H.create_user_command = function()
   vim.api.nvim_create_user_command(cmd, function(opts)
     local action = opts.fargs[1]
 
-    if Session[action] and type(Session[action]) == 'function' then
+    if Session[action] and type(Session[action]) == "function" then
       Session[action]()
     else
       H.notify("Unknown action: " .. (action or ""), vim.log.levels.ERROR)

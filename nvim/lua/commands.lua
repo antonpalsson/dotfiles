@@ -1,3 +1,10 @@
+-- Treesitter
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function()
+    pcall(vim.treesitter.start)
+  end,
+})
+
 -- Auto resize splits
 vim.api.nvim_create_autocmd("VimResized", {
   command = "wincmd =",
@@ -6,13 +13,13 @@ vim.api.nvim_create_autocmd("VimResized", {
 -- Notify on macro recording
 vim.api.nvim_create_autocmd("RecordingEnter", {
   callback = function()
-    vim.notify("Recording macro to register: " .. vim.fn.reg_recording(), vim.log.levels.WARN)
+    vim.notify("Recording macro to register: " .. vim.fn.reg_recording(), vim.log.levels.WARN, { id = "macro_mode", timeout = false })
   end,
 })
 
 vim.api.nvim_create_autocmd("RecordingLeave", {
   callback = function()
-    vim.notify("Macro recording stopped", vim.log.levels.INFO)
+    Snacks.notifier.hide("macro_mode")
   end,
 })
 
@@ -25,7 +32,7 @@ vim.api.nvim_create_autocmd("LspProgress", {
       title = "LSP Progress",
       opts = function(notif)
         notif.icon = ev.data.params.value.kind == "end" and " "
-        or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+            or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
       end,
     })
   end,

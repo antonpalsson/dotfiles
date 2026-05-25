@@ -1,36 +1,30 @@
-local capabilities = require('blink.cmp').get_lsp_capabilities()
+local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-vim.lsp.config('*', {
+vim.lsp.config("*", {
   capabilities = capabilities,
-  root_markers = { '.git' },
+  root_markers = { ".git" },
 })
 
-vim.lsp.config('ts_ls', {
-  root_markers = { 'tsconfig.json', 'package.json' },
+vim.lsp.config("ts_ls", {
+  root_markers = { "tsconfig.json", "package.json" },
 })
 
-vim.lsp.config('eslint', {
+vim.lsp.config("eslint", {
   root_markers = {
-    'eslint.config.js', 'eslint.config.mjs', 'eslint.config.cjs',
-    '.eslintrc', '.eslintrc.js', '.eslintrc.json',
-    '.eslintrc.yml', '.eslintrc.yaml',
+    "eslint.config.js", "eslint.config.mjs", "eslint.config.cjs",
+    ".eslintrc", ".eslintrc.js", ".eslintrc.json",
+    ".eslintrc.yml", ".eslintrc.yaml",
   },
 })
 
-vim.lsp.config('tailwindcss', {})
+vim.lsp.config("tailwindcss", {})
 
-vim.lsp.config('biome', {
-  root_markers = { 'biome.json', 'biome.jsonc' },
+vim.lsp.config("biome", {
+  root_markers = { "biome.json", "biome.jsonc" },
 })
 
-vim.lsp.config('ltex', {
-  settings = {
-    ltex = { language = "en-GB" },
-  },
-})
-
-vim.lsp.config('ruby_lsp', {
-  root_markers = { 'Gemfile' },
+vim.lsp.config("ruby_lsp", {
+  root_markers = { "Gemfile" },
   init_options = {
     addonSettings = {
       ["Ruby LSP Rails"] = { enablePendingMigrationsPrompt = false }
@@ -38,11 +32,11 @@ vim.lsp.config('ruby_lsp', {
   },
 })
 
-vim.lsp.config('lua_ls', {
+vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
-      runtime = { version = 'LuaJIT' },
-      diagnostics = { globals = { 'vim', 'require' } },
+      runtime = { version = "LuaJIT" },
+      diagnostics = { globals = { "vim", "require" } },
       workspace = {
         library = vim.api.nvim_get_runtime_file("", true),
         checkThirdParty = false,
@@ -60,13 +54,12 @@ vim.diagnostic.config({
 
 -- LSP toggle picker
 local servers = {
-  { text = "Typescript LS", name = 'ts_ls',       enabled = vim.lsp.is_enabled('ts_ls') },
-  { text = "Eslint",        name = "eslint",      enabled = vim.lsp.is_enabled('eslint') },
-  { text = "Biome",         name = "biome",       enabled = vim.lsp.is_enabled('biome') },
-  { text = "Tailwind LS",   name = "tailwindcss", enabled = vim.lsp.is_enabled('tailwindcss') },
-  { text = "Ruby LSP",      name = 'ruby_lsp',    enabled = vim.lsp.is_enabled('ruby_lsp') },
-  { text = "Lua LS",        name = "lua_ls",      enabled = vim.lsp.is_enabled('lua_ls') },
-  { text = "Ltex",          name = 'ltex',        enabled = vim.lsp.is_enabled('ltex') }
+  { text = "Typescript LS", name = "ts_ls",       enabled = vim.lsp.is_enabled("ts_ls") },
+  { text = "Biome",         name = "biome",       enabled = vim.lsp.is_enabled("biome") },
+  { text = "Tailwind LS",   name = "tailwindcss", enabled = vim.lsp.is_enabled("tailwindcss") },
+  { text = "Eslint",        name = "eslint",      enabled = vim.lsp.is_enabled("eslint") },
+  { text = "Ruby LSP",      name = "ruby_lsp",    enabled = vim.lsp.is_enabled("ruby_lsp") },
+  { text = "Lua LS",        name = "lua_ls",      enabled = vim.lsp.is_enabled("lua_ls") },
 }
 
 local function lsp_toggle_menu()

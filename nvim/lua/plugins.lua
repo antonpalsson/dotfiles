@@ -1,117 +1,5 @@
-require("tabline").setup({ show_navigation_count = true })
-require("session").setup({ auto_load = true })
-
--- Theme
-require("vague").setup({
-  transparent = true,
-  italic = false
-})
-
-vim.cmd.colorscheme("vague")
-
--- Custom highlighting
-local theme_fg = require("vague.config.internal").current.colors.fg
-local colors = {
-  black = '#000000',
-  gray1 = '#1e1e1e',
-  gray2 = '#323232',
-  gray3 = '#464646',
-  gray4 = '#5a5a5a',
-  white = '#ffffff',
-  fg = theme_fg,
-}
-
-vim.api.nvim_set_hl(0, "TabLineFill",          { fg = colors.fg,    bg = colors.black })
-vim.api.nvim_set_hl(0, "TabLineSel",           { fg = colors.white, bg = colors.gray4 })
-vim.api.nvim_set_hl(0, "TabLine",              { fg = colors.gray4, bg = colors.black })
-vim.api.nvim_set_hl(0, "MiniStatuslineDevinfo",  { fg = colors.fg,  bg = colors.gray3 })
-vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { fg = colors.fg,  bg = colors.gray2 })
-vim.api.nvim_set_hl(0, "MiniStatuslineDivide",   { fg = colors.fg,  bg = colors.black })
-vim.api.nvim_set_hl(0, "MiniStatuslineFiletype", { fg = colors.fg,  bg = colors.gray2 })
-vim.api.nvim_set_hl(0, "MiniStatuslineSearch",   { fg = colors.fg,  bg = colors.gray3 })
-vim.api.nvim_set_hl(0, "SnacksIndent",         { fg = colors.gray1 })
-vim.api.nvim_set_hl(0, "SnacksIndentScope",    { fg = colors.gray1 })
-
--- Statusline
-local mini_statusline = require("mini.statusline")
-mini_statusline.setup({
-  content = {
-    active = function()
-      local mode, mode_hl = mini_statusline.section_mode({ trunc_width = 120 })
-      local git           = mini_statusline.section_git({ trunc_width = 40 })
-      local diff          = mini_statusline.section_diff({ trunc_width = 75, icon = "" })
-      local diagnostics   = mini_statusline.section_diagnostics({ trunc_width = 75 })
-      local lsp           = mini_statusline.section_lsp({ icon = "λ", trunc_width = 75 })
-      local filename      = mini_statusline.section_filename({ trunc_width = 9999 }) -- Always truncate
-      local search        = mini_statusline.section_searchcount({ trunc_width = 75 })
-      local percent       = "%2p%%"
-      local location      = "%3l:%-2c"
-
-      return mini_statusline.combine_groups({
-        { hl = mode_hl,                  strings = { mode } },
-        { hl = "MiniStatuslineDevinfo",  strings = { git, diff, diagnostics } },
-        "%<", -- Mark general truncate point
-        { hl = "MiniStatuslineFilename", strings = { filename } },
-        { hl = "MiniStatuslineDivide" },
-        "%=", -- End left alignment
-        { hl = "MiniStatuslineFiletype", strings = { "%{&filetype}", lsp } },
-        { hl = "MiniStatuslineSearch",   strings = { percent, search } },
-        { hl = mode_hl,                  strings = { location } },
-      })
-    end
-  },
-})
-
--- Markdown
-require('render-markdown').setup({
-  heading = {
-    sign = false,
-    position = 'inline',
-    backgrounds = {},
-  },
-  sign = {
-    enabled = false,
-  },
-  code = {
-    disable_background = true,
-    border = 'thin',
-    language_border = '-',
-    below = '-',
-  },
-})
-
--- Snacks
-require("snacks").setup({
-  bigfile = { enabled = true },
-  input   = { enabled = true },
-  indent  = { enabled = true, animate = { enabled = false } },
-  image   = { enabled = true, doc = { inline = false } },
-  notifier = {
-    enabled = true,
-    top_down = false,
-    margin = { top = 0, right = 0, bottom = 1 },
-  },
-  picker = {
-    enabled = true,
-    sources = {
-      files    = { hidden = true },
-      grep     = { hidden = true },
-      explorer = { hidden = true, ignored = true },
-    },
-    explorer = { trash = true },
-  },
-})
-
--- Treesitter
-local ts_langs = { "lua", "ruby", "markdown", "regex" }
-require("nvim-treesitter").install(ts_langs)
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = ts_langs,
-  callback = function() pcall(vim.treesitter.start) end,
-})
-
--- Mini modules
+-- Mini
+require("mini.statusline").setup({})
 require("mini.extra").setup({})
 require("mini.icons").setup({})
 require("mini.splitjoin").setup({})
@@ -125,19 +13,40 @@ require("mini.diff").setup({
   }
 })
 
+-- Snacks
+require("snacks").setup({
+  bigfile  = { enabled = true },
+  input    = { enabled = true },
+  indent   = { enabled = true, animate = { enabled = false } },
+  image    = { enabled = true, doc = { inline = false } },
+  notifier = {
+    enabled = true,
+    top_down = false,
+    margin = { top = 0, right = 0, bottom = 1 },
+  },
+  picker   = {
+    enabled = true,
+    sources = {
+      files    = { hidden = true },
+      grep     = { hidden = true },
+      explorer = { hidden = true, ignored = true },
+    },
+    explorer = { trash = true },
+  },
+})
 
--- Completion
--- require('blink.cmp').build():wait(60000) -- Needed for setup
+-- Blink
+require("blink.cmp").build():wait(60000)
 require("blink.cmp").setup({
   fuzzy = { implementation = "rust" },
   signature = { enabled = true },
-  sources = { default = { 'lsp', 'path', 'buffer' } },
+  sources = { default = { "lsp", "path", "buffer" } },
   cmdline = { enabled = false },
   keymap = {
     preset = "default",
-    ['<Tab>'] = { 'select_and_accept', 'fallback' },
-    ['<C-a>'] = { 'show', 'show_documentation', 'hide_documentation' },
-    ['<C-c>'] = { 'hide', 'fallback' },
+    ["<Tab>"] = { "select_and_accept", "fallback" },
+    ["<C-a>"] = { "show", "show_documentation", "hide_documentation" },
+    ["<C-c>"] = { "hide", "fallback" },
   },
   completion = {
     trigger = {
@@ -156,3 +65,56 @@ require("blink.cmp").setup({
     }
   }
 })
+
+-- Diffview
+require("diffview").setup({
+  enhanced_diff_hl = true,
+  use_icons = false,
+  show_help_hints = false,
+})
+
+-- Treesitter
+local ts_langs = { "lua", "ruby", "markdown", "regex" }
+require("nvim-treesitter").install(ts_langs)
+
+-- Markdown
+require("render-markdown").setup({
+  heading = {
+    sign = false,
+    position = "inline",
+    backgrounds = {},
+  },
+  sign = {
+    enabled = false,
+  },
+  code = {
+    disable_background = true,
+    border = "thin",
+    language_border = "-",
+    below = "-",
+  },
+})
+
+-- Theme
+require("vague").setup({
+  transparent = true,
+  italic = false
+})
+
+vim.cmd.colorscheme("vague")
+
+-- Custom highlighting
+local theme_fg = require("vague.config.internal").current.colors.fg
+local custom_colors = {
+  black = "#000000",
+  dark = "#161616",
+  light = "#636363",
+  white = "#ffffff",
+  fg = theme_fg,
+}
+
+vim.api.nvim_set_hl(0, "TabLineFill", { fg = custom_colors.fg, bg = custom_colors.black })
+vim.api.nvim_set_hl(0, "TabLineSel", { fg = custom_colors.white, bg = custom_colors.light })
+vim.api.nvim_set_hl(0, "TabLine", { fg = custom_colors.light, bg = custom_colors.dark })
+vim.api.nvim_set_hl(0, "SnacksIndent", { fg = custom_colors.dark })
+vim.api.nvim_set_hl(0, "SnacksIndentScope", { fg = custom_colors.dark })
