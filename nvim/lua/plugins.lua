@@ -18,7 +18,7 @@ require("snacks").setup({
   bigfile  = { enabled = true },
   input    = { enabled = true },
   indent   = { enabled = true, animate = { enabled = false } },
-  image    = { enabled = true, doc = { inline = false } },
+  image    = { enabled = true, doc = { inline = true }, convert = { notify = true } },
   notifier = {
     enabled = true,
     top_down = false,
