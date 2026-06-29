@@ -3,22 +3,6 @@
 set -e
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROFILE=""
-
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --profile=*) PROFILE="${1#--profile=}" ;;
-    --profile) shift; PROFILE="$1" ;;
-  esac
-  shift
-done
-
-if [ -z "$PROFILE" ]; then
-  echo "Error: --profile is required. Available profiles: ye, yi, dlille"
-  exit 1
-fi
-
-echo "Profile: $PROFILE"
 
 stow_to() {
   target="$1"; pkg="$2"
@@ -26,32 +10,10 @@ stow_to() {
   stow --target "$target" --dir "$DOTFILES_DIR" --restow "$pkg"
 }
 
-case "$PROFILE" in
-  ye)
-    stow_to "$HOME"                 home
-    stow_to "$HOME/.config/zsh"     zsh-mac
-    stow_to "$HOME/.config/zsh"     zsh
-    stow_to "$HOME/.config/nvim"    nvim
-    stow_to "$HOME/.config/tmux"    tmux
-    stow_to "$HOME/.config/ghostty" ghostty
-    ;;
-  yi)
-    stow_to "$HOME"                 home
-    stow_to "$HOME/.config/zsh"     zsh-fedora
-    stow_to "$HOME/.config/zsh"     zsh
-    stow_to "$HOME/.config/nvim"    nvim
-    stow_to "$HOME/.config/tmux"    tmux
-    stow_to "$HOME/.config/ghostty" ghostty
-    ;;
-  dlille)
-    stow_to "$HOME"                 home
-    stow_to "$HOME/.config/zsh"     zsh-raspi
-    stow_to "$HOME/.config/nvim"    nvim
-    ;;
-  *)
-    echo "Error: Unknown profile '$PROFILE'. Available profiles: ye, yi, dlille"
-    exit 1
-    ;;
-esac
+stow_to "$HOME"                 home
+stow_to "$HOME/.config/zsh"     zsh
+stow_to "$HOME/.config/nvim"    nvim
+stow_to "$HOME/.config/tmux"    tmux
+stow_to "$HOME/.config/ghostty" ghostty
 
 echo "Done!"
