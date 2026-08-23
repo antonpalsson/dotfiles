@@ -6,4 +6,4 @@
 ./install
 ```
 
-**Configs**: zsh, neovim, tmux, ghostty
+**Configs**: zsh, neovim, tmux, ghostty, (stow for install)

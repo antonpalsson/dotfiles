@@ -52,6 +52,7 @@ alias t3="eza -a --tree --level=3"
 alias t4="eza -a --tree --level=4"
 alias tf="eza -a --tree"
 
+alias c="claude"
 alias v="nvim"
 alias vim="nvim"
 alias k="kubectl"

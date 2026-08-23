@@ -1,5 +1,5 @@
 typeset -U path
-path=($HOME/.local/bin $path)
+path=(/opt/homebrew/bin /opt/homebrew/sbin $HOME/.local/bin $path)
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(mise activate zsh --shims)"
