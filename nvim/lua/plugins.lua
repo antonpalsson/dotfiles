@@ -25,9 +25,16 @@ require("snacks").setup({
     enabled = true,
     doc = {
       inline = true,
-      max_width = 40,
+      max_width = 200,
+      max_height = 100,
     },
-    convert = { notify = true }
+    convert = {
+      notify = true,
+      mermaid = function()
+        local theme = vim.o.background == "light" and "neutral" or "dark"
+        return { "-i", "{src}", "-o", "{file}", "-b", "transparent", "-t", theme, "-s", "4" }
+      end,
+    }
   },
   notifier = {
     enabled = true,
@@ -39,7 +46,15 @@ require("snacks").setup({
     sources = {
       files    = { hidden = true },
       grep     = { hidden = true },
-      explorer = { hidden = true, ignored = true },
+      explorer = {
+        hidden = true,
+        ignored = true,
+        win = {
+          -- Let <Tab>/<S-Tab> switch tabs instead of selecting entries
+          input = { keys = { ["<Tab>"] = false, ["<S-Tab>"] = false, ["<C-n>"] = false } },
+          list = { keys = { ["<Tab>"] = false, ["<S-Tab>"] = false, ["<C-n>"] = false } },
+        },
+      },
     },
     explorer = { trash = true },
   },
@@ -77,14 +92,35 @@ require("blink.cmp").setup({
 })
 
 -- Diffview
+local diffview_actions = require("diffview.actions")
+
+local diffview_keymaps = {
+  { "n", "<tab>",     false },
+  { "n", "<s-tab>",   false },
+  { "n", "]f",        diffview_actions.select_next_entry, { desc = "Next file" } },
+  { "n", "[f",        diffview_actions.select_prev_entry, { desc = "Prev file" } },
+  { "n", "<leader>gf", diffview_actions.goto_file_tab,    { desc = "Open file in new tab" } },
+  { "n", "<leader>q", "<cmd>DiffviewClose<cr>",           { desc = "Diff Close" } },
+}
+
 require("diffview").setup({
   enhanced_diff_hl = true,
   use_icons = false,
   show_help_hints = false,
+  keymaps = {
+    view = diffview_keymaps,
+    file_panel = diffview_keymaps,
+    file_history_panel = diffview_keymaps,
+  },
 })
 
 -- Treesitter
-local ts_langs = { "lua", "ruby", "markdown", "regex" }
+local ts_langs = {
+  "bash", "css", "diff", "git_config", "git_rebase", "gitcommit", "gitignore",
+  "html", "javascript", "json", "lua", "luadoc", "markdown",
+  "markdown_inline", "python", "query", "regex", "ruby", "toml", "tsx",
+  "typescript", "vim", "vimdoc", "yaml",
+}
 require("nvim-treesitter").install(ts_langs)
 
 -- Markdown

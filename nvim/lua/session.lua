@@ -115,6 +115,7 @@ end
 H.get_open_files = function()
   local seen = {}
   local files = {}
+  local current_buf = vim.api.nvim_get_current_buf()
 
   for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
     for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
@@ -124,7 +125,7 @@ H.get_open_files = function()
         local buftype = vim.api.nvim_get_option_value("buftype", { buf = buf })
         if path ~= "" and buftype == "" then
           local cursor = vim.api.nvim_win_get_cursor(win)
-          table.insert(files, { path = path, line = cursor[1] })
+          table.insert(files, { path = path, line = cursor[1], col = cursor[2], current = buf == current_buf })
           seen[buf] = true
         end
       end
@@ -132,6 +133,27 @@ H.get_open_files = function()
   end
 
   return files
+end
+
+H.write_session = function(path, entries)
+  local file = io.open(path, "w")
+  if not file then return false end
+
+  for _, entry in ipairs(entries) do
+    file:write((entry.current and "*" or "") .. entry.path .. ":" .. entry.line .. ":" .. entry.col .. "\n")
+  end
+  file:close()
+
+  return true
+end
+
+H.clamp_cursor = function(buf, line, col)
+  line = math.min(math.max(line or 1, 1), vim.api.nvim_buf_line_count(buf))
+
+  local text = vim.api.nvim_buf_get_lines(buf, line - 1, line, false)[1] or ""
+  col = math.min(math.max(col or 0, 0), #text)
+
+  return line, col
 end
 
 Session.save = function()
@@ -149,20 +171,14 @@ Session.save = function()
     return
   end
 
-  local file = io.open(path, "w")
-  if not file then
+  if not H.write_session(path, files) then
     H.notify("Session save failed: could not write to " .. path, vim.log.levels.ERROR)
     return
   end
 
-  for _, entry in ipairs(files) do
-    file:write(entry.path .. ":" .. entry.line .. "\n")
-  end
-  file:close()
-
   local summary = { "Session saved: " .. repo }
   for _, entry in ipairs(files) do
-    table.insert(summary, "  " .. vim.fn.fnamemodify(entry.path, ":.") .. ":" .. entry.line)
+    table.insert(summary, "  " .. vim.fn.fnamemodify(entry.path, ":.") .. ":" .. entry.line .. ":" .. entry.col)
   end
   H.notify(table.concat(summary, "\n"))
 end
@@ -191,9 +207,15 @@ Session.load = function()
 
   local entries = {}
   for line in file:lines() do
-    local fpath, lnum = line:match("^(.+):(%d+)$")
-    if fpath and lnum then
-      table.insert(entries, { path = fpath, line = tonumber(lnum) })
+    local current = line:sub(1, 1) == "*"
+    if current then line = line:sub(2) end
+
+    local fpath, lnum, cnum = line:match("^(.+):(%d+):(%d+)$")
+    if not fpath then fpath, lnum = line:match("^(.+):(%d+)$") end
+    if not fpath and line ~= "" then fpath = line end
+
+    if fpath then
+      table.insert(entries, { path = fpath, line = tonumber(lnum) or 1, col = tonumber(cnum) or 0, current = current })
     end
   end
   file:close()
@@ -203,19 +225,38 @@ Session.load = function()
     return
   end
 
-  local opened = 0
+  local present, dropped = {}, 0
   for _, entry in ipairs(entries) do
     if vim.fn.filereadable(entry.path) == 1 then
-      if opened > 0 then vim.cmd("tabnew") end
-      vim.cmd("edit " .. vim.fn.fnameescape(entry.path))
-      vim.api.nvim_win_set_cursor(0, { entry.line, 0 })
-      opened = opened + 1
+      table.insert(present, entry)
+    else
+      dropped = dropped + 1
     end
   end
 
-  if opened > 1 then vim.cmd("tabfirst") end
+  if dropped > 0 then H.write_session(path, present) end
 
-  H.notify("Session loaded: " .. repo)
+  if #present == 0 then
+    H.notify("Session has no existing files: " .. repo, vim.log.levels.WARN)
+    return
+  end
+
+  local current_tab = 1
+  for i, entry in ipairs(present) do
+    if i > 1 then vim.cmd("tabnew") end
+    if entry.current then current_tab = i end
+    vim.cmd("edit " .. vim.fn.fnameescape(entry.path))
+    local line, col = H.clamp_cursor(0, entry.line, entry.col)
+    vim.api.nvim_win_set_cursor(0, { line, col })
+  end
+
+  vim.cmd("tabnext " .. current_tab)
+
+  local msg = "Session loaded: " .. repo
+  if dropped > 0 then
+    msg = msg .. " (dropped " .. dropped .. " missing file" .. (dropped == 1 and "" or "s") .. ")"
+  end
+  H.notify(msg)
 end
 
 Session.delete = function()

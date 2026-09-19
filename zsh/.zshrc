@@ -73,6 +73,7 @@ function dcb() { docker compose exec "$@" bash }
 alias gss="git status --short"
 alias gd="git diff"
 alias glg="git log --stat"
+alias glo="git log --oneline --graph master..HEAD"
 alias ga="git add"
 alias gaa="git add --all"
 alias gc="git commit"
@@ -98,13 +99,9 @@ function gchy() { git rev-parse HEAD | tr -d '\n' | pbcopy && echo "Copied $(git
 function gwip() { git add -A && if git log -1 --format='%s' | grep -q '^WIP'; then git commit --amend --no-edit; else git commit -m "WIP"; fi } # WIP commit (amends if last is WIP)
 function gunwip() { if git log -1 --format='%s' | grep -q '^WIP'; then git reset HEAD~1; else echo "Last commit is not a WIP"; fi } # Undo WIP commit
 
-# Keyboard
-bindkey "^[[3~" delete-char      # Delete
-bindkey "^[[H"  beginning-of-line # Home
-bindkey "^[[F"  end-of-line       # End
-bindkey "^[[2~" overwrite-mode    # Insert
-bindkey "^[[5~" beginning-of-buffer-or-history # PageUp
-bindkey "^[[6~" end-of-buffer-or-history       # PageDown
+# Temporary alias for Claude sniff
+alias cs="/Users/polle/.claude/tools/claude-file-reads.py"
+alias csd="/Users/polle/.claude/tools/claude-file-reads.py --glob '**/docs/**'"
 
 # Booli
 if [ -f ~/.booli_zshrc ]; then

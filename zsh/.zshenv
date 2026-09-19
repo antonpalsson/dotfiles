@@ -1,13 +1,21 @@
 typeset -U path
-path=(/opt/homebrew/bin /opt/homebrew/sbin $HOME/.local/bin $path)
+path=($HOME/.local/bin $path)
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
-eval "$(mise activate zsh --shims)"
+if [[ $(uname) == "Darwin" ]]; then
+  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
 
-if [[ -d /Applications/Ghostty.app/Contents/MacOS ]]; then
-  path=(/Applications/Ghostty.app/Contents/MacOS $path)
+  if (( $+commands[brew] )); then
+    eval "$(brew shellenv)"
+  fi
+
+  if [[ -d /Applications/Ghostty.app/Contents/MacOS ]]; then
+    path=(/Applications/Ghostty.app/Contents/MacOS $path)
+  fi
 fi
 
-if [[ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]]; then
-  export PUPPETEER_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# if [[ $(uname) == "Linux" ]]; then
+# fi
+
+if (( $+commands[mise] )); then
+  eval "$(mise activate zsh --shims)"
 fi

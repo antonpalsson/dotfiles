@@ -21,31 +21,70 @@ local function picker_opts()
   return { layout = { preset = "ivy_split", layout = { height = 0.3 } } }
 end
 
-vim.keymap.set("n", "<C-e>", function() Snacks.picker.explorer() end, { desc = "File Explorer" })
+local function picker_opts_command()
+  return {
+    layout = {
+      hidden = { "preview" },
+      layout = {
+        backdrop = false,
+        row = 10,
+        width = 0.4,
+        min_width = 80,
+        height = 0.4,
+        border = "none",
+        box = "vertical",
+        { win = "input", height = 1, border = true, title = "{title} {live} {flags}", title_pos = "center" },
+        { win = "list", border = true },
+        { win = "preview", title = "{preview}", border = true },
+      },
+    },
+  }
+end
+
 vim.keymap.set("n", "<leader>ff", function() Snacks.picker.files(picker_opts()) end, { desc = "Find Files" })
 vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep(picker_opts()) end, { desc = "Grep (Live)" })
-vim.keymap.set("n", "<leader>fh", function() Snacks.picker.git_diff(picker_opts()) end, { desc = "Git Hunks" })
-vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end, { desc = "Buffers" })
-vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log() end, { desc = "Git Commits" })
-vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics" })
-vim.keymap.set("n", "<leader>f:", function() Snacks.picker.commands() end, { desc = "Commands" })
+vim.keymap.set("n", "<leader>fs", function() Snacks.picker.git_status(picker_opts()) end, { desc = "Git Hunks" })
+vim.keymap.set("n", "<leader>fc", function() Snacks.picker.git_log(picker_opts()) end, { desc = "Git Commits" })
+vim.keymap.set("n", "<leader>fd", function() Snacks.picker.diagnostics(picker_opts()) end, { desc = "Diagnostics" })
+vim.keymap.set("n", "<leader>f:", function() Snacks.picker.commands(picker_opts_command()) end, { desc = "Commands" })
+vim.keymap.set("n", "<leader>fh", function() Snacks.picker.command_history(picker_opts_command()) end, { desc = "Command History" })
+
+vim.keymap.set("n", "<C-n>", function()
+  local explorer = Snacks.picker.get({ source = "explorer" })[1]
+  if not explorer then
+    Snacks.picker.explorer({ focus = false })
+  elseif explorer:is_focused() then
+    if explorer.main and vim.api.nvim_win_is_valid(explorer.main) then
+      vim.api.nvim_set_current_win(explorer.main)
+    else
+      vim.cmd("wincmd p")
+    end
+  else
+    explorer:focus("list")
+  end
+end, { desc = "File Explorer" })
+
+vim.keymap.set("n", "<C-S-n>", function()
+  local explorer = Snacks.picker.get({ source = "explorer" })[1]
+  if explorer then explorer:close() end
+end, { desc = "Close File Explorer" })
 
 -- DiffView bindings
-vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diff (index)" })
-vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File History" })
-vim.keymap.set("n", "<leader>gH", "<cmd>DiffviewFileHistory<cr>", { desc = "Repo History" })
-vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Diff Close" })
-vim.keymap.set("v", "<leader>gh", ":'<,'>DiffviewFileHistory<cr>", { desc = "History (range)" })
+vim.keymap.set("n", "<leader>go", "<cmd>DiffviewOpen<cr>", { desc = "Diff (index)" })
+vim.keymap.set({ "n", "v" }, "<leader>gl", ":DiffviewFileHistory<CR>", { desc = "Line history" })
+
+-- MiniDiff
+vim.keymap.set("n", "<leader>gd", function() MiniDiff.toggle_overlay(0) end)
 
 -- Lsp bindings
-vim.keymap.set("n", "grr", function() Snacks.picker.lsp_references() end, { desc = "LSP References" })
-vim.keymap.set("n", "grd", function() Snacks.picker.lsp_declarations() end, { desc = "LSP Declaration" })
-vim.keymap.set("n", "gri", function() Snacks.picker.lsp_implementations() end, { desc = "LSP Implementation" })
-vim.keymap.set("n", "grt", function() Snacks.picker.lsp_type_definitions() end, { desc = "LSP Type Definition" })
-vim.keymap.set("n", "grs", function() Snacks.picker.lsp_symbols() end, { desc = "LSP Symbols (Buffer)" })
-vim.keymap.set("n", "grS", function() Snacks.picker.lsp_workspace_symbols() end, { desc = "LSP Symbols (Workspace)" })
-vim.keymap.set("n", "<leader>dd", function() Snacks.picker.diagnostics() end, { desc = "Diagnostics (Buffer)" })
-vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer() end, { desc = "Diagnostics (All)" })
+vim.keymap.set("n", "grr", function() Snacks.picker.lsp_references(picker_opts()) end, { desc = "LSP References" })
+vim.keymap.set("n", "grd", function() Snacks.picker.lsp_declarations(picker_opts()) end, { desc = "LSP Declaration" })
+vim.keymap.set("n", "gri", function() Snacks.picker.lsp_implementations(picker_opts()) end, { desc = "LSP Implementation" })
+vim.keymap.set("n", "grt", function() Snacks.picker.lsp_type_definitions(picker_opts()) end, { desc = "LSP Type Definition" })
+vim.keymap.set("n", "grs", function() Snacks.picker.lsp_symbols(picker_opts()) end, { desc = "LSP Symbols (Buffer)" })
+vim.keymap.set("n", "grS", function() Snacks.picker.lsp_workspace_symbols(picker_opts()) end, { desc = "LSP Symbols (Workspace)" })
+vim.keymap.set("n", "<leader>dd", function() Snacks.picker.diagnostics(picker_opts()) end, { desc = "Diagnostics (Buffer)" })
+vim.keymap.set("n", "<leader>dD", function() Snacks.picker.diagnostics_buffer(picker_opts()) end, { desc = "Diagnostics (All)" })
 vim.keymap.set({ "n", "x" }, "gq", function() vim.lsp.buf.format({ async = true }) end, { desc = "LSP Format" })
 vim.keymap.set("n", "gd", function() Snacks.picker.lsp_definitions() end, { desc = "LSP Definition" })
 vim.keymap.set("n", "gD", function()
@@ -149,10 +188,4 @@ end, {})
 -- No highlight
 vim.keymap.set("n", "<leader>noh", function()
   vim.cmd("noh")
-end, {})
-
--- Delete all buffers
-vim.keymap.set("n", "<leader>bda", function()
-  vim.cmd("%bdelete!")
-  vim.notify("Deleted all buffers")
 end, {})
