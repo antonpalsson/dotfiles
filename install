@@ -8,6 +8,7 @@ stow_to() {
   target="$1"; pkg="$2"
   mkdir -p "$target"
   stow --target "$target" --dir "$DOTFILES_DIR" --restow "$pkg"
+  echo "Stowed $pkg -> $(echo "$target" | sed "s|^$HOME|~|")"
 }
 
 stow_to "$HOME"                 home
@@ -15,5 +16,3 @@ stow_to "$HOME/.config/zsh"     zsh
 stow_to "$HOME/.config/nvim"    nvim
 stow_to "$HOME/.config/tmux"    tmux
 stow_to "$HOME/.config/ghostty" ghostty
-
-echo "Done!"

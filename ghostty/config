@@ -23,3 +23,6 @@ window-width = 180
 mouse-hide-while-typing = true
 scrollback-limit = 1000000
 desktop-notifications = false
+keybind = ctrl+shift+n=unbind
+
+config-file = ?local.conf

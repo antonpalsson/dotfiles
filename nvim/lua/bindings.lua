@@ -70,8 +70,9 @@ vim.keymap.set("n", "<C-S-n>", function()
 end, { desc = "Close File Explorer" })
 
 -- DiffView bindings
-vim.keymap.set("n", "<leader>go", "<cmd>DiffviewOpen<cr>", { desc = "Diff (index)" })
-vim.keymap.set({ "n", "v" }, "<leader>gl", ":DiffviewFileHistory<CR>", { desc = "Line history" })
+vim.keymap.set("n", "<leader>dvo", "<cmd>DiffviewOpen<cr>", { desc = "Diff (index)" })
+vim.keymap.set("n", "<leader>dvm", "<cmd>DiffviewOpen master --merge-base<cr>", { desc = "Diff (master)" })
+vim.keymap.set({ "n", "v" }, "<leader>dvh", ":DiffviewFileHistory<CR>", { desc = "Line history" })
 
 -- MiniDiff
 vim.keymap.set("n", "<leader>gd", function() MiniDiff.toggle_overlay(0) end)

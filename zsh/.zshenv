@@ -13,8 +13,10 @@ if [[ $(uname) == "Darwin" ]]; then
   fi
 fi
 
-# if [[ $(uname) == "Linux" ]]; then
-# fi
+if [[ $(uname) == "Linux" ]]; then
+  export NPM_CONFIG_PREFIX=$HOME/.npm-global
+  path=($NPM_CONFIG_PREFIX/bin $path)
+fi
 
 if (( $+commands[mise] )); then
   eval "$(mise activate zsh --shims)"
